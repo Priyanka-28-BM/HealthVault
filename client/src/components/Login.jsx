@@ -1,13 +1,20 @@
-import React from "react";
-import { Box, Link, Button, Paper, TextField, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Button, Paper, TextField, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../config/supabaseClient"; // Ensure this is correctly configured
 
-export const Login = () => {
-  const heading = { fontSize: "2.5rem", fontWeight: "600vw" };
+const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const heading = { fontSize: "2.5rem", fontWeight: "600" };
   const paperstyle = {
     padding: "2rem",
     margin: "100px auto",
     borderRadius: "1rem",
-    boxShadow: "10px 10px 10px 10px",
+    boxShadow: "10px 10px 10px rgba(0, 0, 0, 0.2)",
   };
   const row = { display: "flex", marginTop: "1.2rem" };
   const btnStyle = {
@@ -17,6 +24,28 @@ export const Login = () => {
     backgroundColor: "green",
     borderRadius: "0.5rem",
   };
+  const errorText = { color: "red", marginTop: "1rem", fontWeight: "bold" };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setError(error.message || "Login failed. Please try again.");
+      } else {
+        console.log("Login successful:", data);
+        navigate("/home"); // Redirect to homepage
+      }
+    } catch (err) {
+      setError("Something went wrong. Please check your connection and try again.");
+    }
+  };
 
   return (
     <Box align="center">
@@ -25,29 +54,36 @@ export const Login = () => {
         sx={{
           width: {
             xs: "80vw",
-            sm: "50vw", // 600
-            md: "40vw", // 900
-            lg: "30vw", // 1200
-            xl: "20vw", // 1536
+            sm: "50vw",
+            md: "40vw",
+            lg: "30vw",
+            xl: "20vw",
           },
           height: "60vh",
         }}
       >
-        <form>
+        <form onSubmit={handleLogin}>
           <Typography style={heading}>Login</Typography>
 
           <TextField
             style={row}
-            sx={{ label: { fontWeight: "700", fontSize: "1.3rem" } }}
             label="Enter Email"
             type="email"
-          ></TextField>
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            fullWidth
+            required
+          />
           <TextField
             style={row}
-            sx={{ label: { fontWeight: "700", fontSize: "1.3rem" } }}
             label="Enter Password"
             type="password"
-          ></TextField>
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+            required
+          />
+          {error && <Typography style={errorText}>{error}</Typography>}
           <Button variant="contained" type="submit" style={btnStyle}>
             Login
           </Button>
