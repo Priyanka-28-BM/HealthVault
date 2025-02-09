@@ -1,7 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const chatbot = require("./routes/chatbot"); // Import chatbot logic
+//const chatbot = require("./routes/chatbot"); // Import chatbot logic
 
 dotenv.config(); // Load environment variables
 
@@ -17,7 +17,7 @@ const authRoutes = require("./routes/auth");
 app.use("/auth", authRoutes);
 
 // Route for chatbot interactions
-app.use("/chat", chatbot);
+//app.use("/chat", chatbot);
 
 // Start the server
 app.listen(PORT, () => {
