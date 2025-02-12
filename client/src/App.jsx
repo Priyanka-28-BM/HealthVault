@@ -5,7 +5,6 @@ import Signup from './components/Signup'; // Import Signup component
 import Home from './components/Home'; // Import Home component
 import Navbar from './components/Navbar';
 import MedicalFiles from './components/medicalfiles';
-//import Chatbot from './components/Chatbot';
 
 function App() {
   const [count, setCount] = useState(0); // Remove if not used
@@ -19,8 +18,6 @@ function App() {
         <Route path="/login" element={<Login />} /> 
         <Route path="/signup" element={<Signup />} /> 
         <Route path="/home" element={<Home />} /> 
-
-       
         <Route path="/medicalfiles" element={<MedicalFiles />} />
       </Routes>
     </BrowserRouter>

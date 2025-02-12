@@ -15,7 +15,7 @@ export const Navbar = ({ isLoggedIn }) => {
   };
 
   // Only display the Navbar on the Signup and Login pages
-  if (location.pathname !== "/signup" && location.pathname !== "/login") {
+  if (location.pathname==="/home") {
     return null;
   }
 
