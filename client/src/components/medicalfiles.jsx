@@ -22,7 +22,8 @@ function MedicalFiles() {
   const navigate = useNavigate();
   const { hospitalName: initialHospitalName } = location.state || {};
 
-  // State management
+   // State to manage hospital name, notes, files, and file previews
+
   const [hospitalName, setHospitalName] = useState(initialHospitalName || "");
   const [note, setNote] = useState("");
   const [files, setFiles] = useState({});
@@ -31,7 +32,7 @@ function MedicalFiles() {
   const [selectedImage, setSelectedImage] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Reset everything when hospital changes
+  // Reset state when hospital name changes
   useEffect(() => {
     if (initialHospitalName && initialHospitalName !== hospitalName) {
       setHospitalName(initialHospitalName);

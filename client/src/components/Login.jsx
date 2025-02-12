@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../config/supabaseClient"; // Ensure this is correctly configured
 
 const Login = () => {
+  // State variables for email, password, and error messages
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -26,11 +27,13 @@ const Login = () => {
   };
   const errorText = { color: "red", marginTop: "1rem", fontWeight: "bold" };
 
+  // Function to handle login
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
+      // Authenticate user with Supabase using email and password
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
