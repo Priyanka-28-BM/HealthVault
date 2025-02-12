@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../config/supabaseClient"; // Correct import
+import { supabase } from "../config/supabaseClient"; 
 import { Box, Paper, Typography, TextField, Button } from "@mui/material";
 
 const Signup = () => {
+    // State variables for user input and error handling
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
+    // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -19,7 +21,7 @@ const Signup = () => {
         }
 
         try {
-            // Sign up the user
+            // Sign up the user with Supabase authentication
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,

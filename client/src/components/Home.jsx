@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ChatIcon from "@mui/icons-material/Chat";
+import CloseIcon from "@mui/icons-material/Close";
 
 function ProfilePage() {
   const [userData, setUserData] = useState({
@@ -28,6 +29,9 @@ function ProfilePage() {
   const [selectedHospital, setSelectedHospital] = useState(null);
   const [hospitalName, setHospitalName] = useState("");
   const [hospitalDocuments, setHospitalDocuments] = useState({});
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatInput, setChatInput] = useState("");
+  const [chatMessages, setChatMessages] = useState([]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -73,6 +77,27 @@ function ProfilePage() {
     }
   };
 
+  const handleSendMessage = async () => {
+    if (!chatInput.trim()) return;
+    const newMessages = [...chatMessages, { role: "user", content: chatInput }];
+    setChatMessages(newMessages);
+    setChatInput("");
+
+    try {
+      const response = await fetch("http://localhost:5000/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: chatInput }),
+      });
+      const data = await response.json();
+      setChatMessages([...newMessages, { role: "bot", content: data.reply }]);
+    } catch (error) {
+      console.error("Chatbot API error:", error);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -92,7 +117,7 @@ function ProfilePage() {
           flexDirection: "column",
           alignItems: "flex-start",
           justifyContent: "flex-start",
-          backgroundColor: "#d0f0c0", // Pastel Green Background
+          backgroundColor: "#d0f0c0",
           padding: "20px",
           borderRight: "2px solid #e0e0e0",
         }}
@@ -106,86 +131,30 @@ function ProfilePage() {
             padding: "20px",
             borderRadius: "15px",
             width: "100%",
-            backgroundColor: "#e8f5e9", // Light Green Background
+            backgroundColor: "#e8f5e9",
           }}
         >
           {isEditing ? (
             <>
-              <TextField
-                label="Name"
-                name="name"
-                value={userData.name}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Age"
-                name="age"
-                value={userData.age}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Blood Group"
-                name="bloodGroup"
-                value={userData.bloodGroup}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Date of Birth"
-                name="dob"
-                value={userData.dob}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Height"
-                name="height"
-                value={userData.height}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Weight"
-                name="weight"
-                value={userData.weight}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSaveProfile}
-                fullWidth
-                sx={{ mt: 2 }}
-              >
+              <TextField label="Name" name="name" value={userData.name} onChange={handleInputChange} fullWidth margin="normal" />
+              <TextField label="Age" name="age" value={userData.age} onChange={handleInputChange} fullWidth margin="normal" />
+              <TextField label="Blood Group" name="bloodGroup" value={userData.bloodGroup} onChange={handleInputChange} fullWidth margin="normal" />
+              <TextField label="Date of Birth" name="dob" value={userData.dob} onChange={handleInputChange} fullWidth margin="normal" />
+              <TextField label="Height" name="height" value={userData.height} onChange={handleInputChange} fullWidth margin="normal" />
+              <TextField label="Weight" name="weight" value={userData.weight} onChange={handleInputChange} fullWidth margin="normal" />
+              <Button variant="contained" color="primary" onClick={handleSaveProfile} fullWidth sx={{ mt: 2 }}>
                 Save Profile
               </Button>
             </>
           ) : (
             <>
-              <Avatar
-                src="https://via.placeholder.com/150"
-                alt="Profile"
-                sx={{ width: 120, height: 120, marginBottom: "20px" }}
-              />
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  {userData.name || "John Doe"}
-                </Typography>
-                <Typography>Age: {userData.age || "28"}</Typography>
-                <Typography>Blood Group: {userData.bloodGroup || "O+"}</Typography>
-                <Typography>DOB: {userData.dob || "01-01-1996"}</Typography>
-                <Typography>Height: {userData.height || "5'9\""}</Typography>
-                <Typography>Weight: {userData.weight || "70kg"}</Typography>
-              </Box>
+              <Avatar src="https://via.placeholder.com/150" alt="Profile" sx={{ width: 120, height: 120, marginBottom: "20px" }} />
+              <Typography variant="h6" fontWeight="bold">{userData.name || "John Doe"}</Typography>
+              <Typography>Age: {userData.age || "28"}</Typography>
+              <Typography>Blood Group: {userData.bloodGroup || "O+"}</Typography>
+              <Typography>DOB: {userData.dob || "01-01-1996"}</Typography>
+              <Typography>Height: {userData.height || "5'9\""}</Typography>
+              <Typography>Weight: {userData.weight || "70kg"}</Typography>
             </>
           )}
         </Paper>
@@ -263,28 +232,44 @@ function ProfilePage() {
         </Box>
       </Box>
 
-      {/* Chatbot Section */}
-      <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#e0f7fa",
-          borderLeft: "2px solid #e0e0e0",
-        }}
-      >
-        <Typography variant="h6" fontWeight="bold" mb={2}>
-          Chatbot
-        </Typography>
-        <IconButton sx={{ backgroundColor: "#4caf50", color: "white", mb: 2 }}>
-          <ChatIcon sx={{ fontSize: 40 }} />
-        </IconButton>
-        <Typography variant="body1" mt={2}>
-          Search for home remedies or ask health-related questions!
-        </Typography>
-      </Box>
+      {/* Floating Chat Button */}
+      <IconButton sx={{ position: "fixed", bottom: 20, right: 20, backgroundColor: "#4caf50", color: "white" }} onClick={() => setIsChatOpen(true)}>
+        <ChatIcon sx={{ fontSize: 40 }} />
+      </IconButton>
+
+      {/* Chat Popup */}
+      {isChatOpen && (
+        <Box sx={{ position: "fixed", bottom: 80, right: 20, width: 450, height: 450, backgroundColor: "white", boxShadow: 3, borderRadius: 2, padding: 2, display: "flex", flexDirection: "column" }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Typography variant="h6">Chatbot</Typography>
+            <IconButton onClick={() => setIsChatOpen(false)}><CloseIcon /></IconButton>
+          </Box>
+          <Box sx={{ flex: 1, overflowY: "auto", padding: 1, display: "flex", flexDirection: "column", gap: 1 }}>
+      {chatMessages.map((msg, i) => (
+        <Box
+          key={i}
+          sx={{
+            alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
+            backgroundColor: msg.role === "user" ? "#4caf50" : "#f0f0f0",
+            color: msg.role === "user" ? "white" : "black",
+            padding: "10px 14px",
+            borderRadius: "16px",
+            maxWidth: "75%",
+            fontSize: "14px",
+            wordBreak: "break-word",
+            boxShadow: 1,
+          }}
+        >
+          <Typography variant="body2" fontWeight="bold">
+            {msg.role === "user" ? "You" : "Bot"}
+          </Typography>
+          <Typography variant="body2">{msg.content}</Typography>
+        </Box>
+      ))}
+    </Box>
+            <TextField value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Type a message..." fullWidth variant="outlined" sx={{ mt: 1 }} onKeyPress={(e) => e.key === "Enter" && handleSendMessage()} />
+        </Box>
+      )}
     </Box>
   );
 }
