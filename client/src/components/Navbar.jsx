@@ -1,21 +1,30 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom"; // Import useLocation
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Logout from "./Logout";
 
-export const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
+export const Navbar = ({ isLoggedIn }) => {
+  const location = useLocation(); // Get the current route
   const button = {
     marginRight: "20px",
     fontSize: "1.2rem",
     fontWeight: "700",
     padding: "0.3rem 1.4rem",
   };
+
+  // Only display the Navbar on the Signup and Login pages
+  if (location.pathname !== "/signup" && location.pathname !== "/login") {
+    return null;
+  }
+
   return (
-    <AppBar sx={{ bgcolor: '#37474F' // Charcoal Gray
-    }}>
+    <AppBar
+      sx={{
+        bgcolor: "#37474F", // Charcoal Gray
+      }}
+    >
       <Toolbar>
         <Typography
           variant="h4"
@@ -50,11 +59,8 @@ export const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
             >
               Signup
             </Button>
-            <Logout></Logout>
           </>
-        ) : (
-          <Logout setIsLoggedIn={setIsLoggedIn} />
-        )}
+        ) : null}
       </Toolbar>
     </AppBar>
   );

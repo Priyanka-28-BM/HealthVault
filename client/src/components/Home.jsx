@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -6,14 +7,16 @@ import {
   Avatar,
   TextField,
   Button,
-  IconButton,
   Card,
   CardContent,
+  IconButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ChatIcon from "@mui/icons-material/Chat";
+import { supabase } from "../config/supabaseClient"; // Ensure this path is correct
 
 function ProfilePage() {
+  const navigate = useNavigate();
+  // State to manage user profile data
   const [userData, setUserData] = useState({
     name: "",
     age: "",
@@ -24,53 +27,214 @@ function ProfilePage() {
   });
   const [isEditing, setIsEditing] = useState(true);
 
+  // State to manage hospital-related data
   const [hospitals, setHospitals] = useState([]);
-  const [selectedHospital, setSelectedHospital] = useState(null);
   const [hospitalName, setHospitalName] = useState("");
+  const [hospitalNotes, setHospitalNotes] = useState({});
   const [hospitalDocuments, setHospitalDocuments] = useState({});
 
+  // Fetch profile and hospital data on component mount
+  useEffect(() => {
+    fetchProfileData();
+    fetchHospitalData();
+  }, []);
+
+  // Fetch profile data from Supabase
+  const fetchProfileData = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("profile_details")
+        .select("*")
+        .single(); // Fetch the first profile entry
+
+      if (error) throw error;
+
+      if (data) {
+        // Map database column names to React state keys
+        setUserData({
+          name: data.name,
+          age: data.age,
+          bloodGroup: data.blood_group, // Map blood_group to bloodGroup
+          dob: data.dob,
+          height: data.height,
+          weight: data.weight,
+        });
+        setIsEditing(false); // Disable editing mode if data exists
+      }
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+    }
+  };
+
+  // Fetch hospital data from Supabase
+  const fetchHospitalData = async () => {
+    try {
+      const { data: hospitalsData, error: hospitalsError } = await supabase
+        .from("hospital_name")
+        .select("name");
+
+      if (hospitalsError) throw hospitalsError;
+
+      if (hospitalsData) {
+        const hospitalNames = hospitalsData.map((hospital) => hospital.name);
+        setHospitals(hospitalNames);
+
+        // Fetch notes and documents for each hospital
+        const notes = {};
+        const documents = {};
+        for (const hospital of hospitalNames) {
+          const { data: notesData, error: notesError } = await supabase
+            .from("notes")
+            .select("note")
+            .eq("hospital_name", hospital);
+
+          if (notesError) throw notesError;
+
+          if (notesData.length > 0) {
+            notes[hospital] = notesData[0].note;
+          }
+
+          const { data: filesData, error: filesError } = await supabase.storage
+            .from("medical_files")
+            .list(`${hospital}/`);
+
+          if (filesError) throw filesError;
+
+          const filePreviews = {};
+          for (const file of filesData) {
+            const type = file.name.split("/")[1];
+            const { publicUrl } = supabase.storage
+              .from("medical_files")
+              .getPublicUrl(file.name).data;
+
+            if (!filePreviews[type]) filePreviews[type] = [];
+            filePreviews[type].push(publicUrl);
+          }
+
+          documents[hospital] = filePreviews;
+        }
+
+        setHospitalNotes(notes);
+        setHospitalDocuments(documents);
+      }
+    } catch (error) {
+      console.error("Error fetching hospital data:", error);
+    }
+  };
+
+  // Handle input changes for profile fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserData({ ...userData, [name]: value });
   };
 
-  const handleSaveProfile = () => {
+  // Save profile data to Supabase
+  const handleSaveProfile = async () => {
     if (Object.values(userData).some((value) => value === "")) {
       alert("Please fill out all fields before saving.");
       return;
     }
-    setIsEditing(false);
+
+    // Map React state keys to database column names
+    const dataToInsert = {
+      name: userData.name,
+      age: userData.age,
+      blood_group: userData.bloodGroup, // Map bloodGroup to blood_group
+      dob: userData.dob,
+      height: userData.height,
+      weight: userData.weight,
+    };
+
+    try {
+      const { data, error } = await supabase
+        .from("profile_details")
+        .upsert([dataToInsert], { onConflict: "name" }); // Upsert to update or insert
+
+      if (error) throw error;
+
+      alert("Profile saved successfully!");
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      alert("Failed to save profile. Check the console for details.");
+    }
   };
 
-  const handleAddHospital = () => {
-    if (hospitalName.trim() === "") return alert("Hospital name cannot be empty!");
-    if (!hospitals.includes(hospitalName)) {
-      setHospitals([...hospitals, hospitalName]);
-      setHospitalDocuments({ ...hospitalDocuments, [hospitalName]: [] });
-      setHospitalName("");
-    } else {
+  // Add hospital to Supabase
+  const handleAddHospital = async () => {
+    if (hospitalName.trim() === "")
+      return alert("Hospital name cannot be empty!");
+
+    if (hospitals.includes(hospitalName)) {
       alert("Hospital already exists!");
+      return;
+    }
+
+    try {
+      // Insert hospital name into the `hospital_name` table
+      const { data, error } = await supabase
+        .from("hospital_name")
+        .insert([{ name: hospitalName }]);
+
+      if (error) throw error;
+
+      // Update local state
+      setHospitals([...hospitals, hospitalName]);
+      setHospitalNotes({ ...hospitalNotes, [hospitalName]: "" });
+      setHospitalDocuments({
+        ...hospitalDocuments,
+        [hospitalName]: {
+          prescription: null,
+          labReport: null,
+          scanningReport: null,
+          randomFile: null,
+        },
+      });
+      setHospitalName("");
+
+      alert("Hospital added successfully!");
+    } catch (error) {
+      console.error("Error adding hospital:", error);
+      alert("Failed to add hospital.");
     }
   };
 
-  const handleDeleteHospital = (hospital) => {
-    setHospitals(hospitals.filter((h) => h !== hospital));
-    const updatedDocs = { ...hospitalDocuments };
-    delete updatedDocs[hospital];
-    setHospitalDocuments(updatedDocs);
-  };
+  // Delete hospital from Supabase
+  const handleDeleteHospital = async (hospital) => {
+    try {
+      // Delete hospital from the `hospital_name` table
+      const { data, error } = await supabase
+        .from("hospital_name")
+        .delete()
+        .eq("name", hospital);
 
-  const handleSelectHospital = (hospital) => {
-    setSelectedHospital(hospital);
-  };
+      if (error) throw error;
 
-  const handleUploadDocument = (e) => {
-    const file = e.target.files[0];
-    if (file && selectedHospital) {
+      // Update local state
+      setHospitals(hospitals.filter((h) => h !== hospital));
+      const updatedNotes = { ...hospitalNotes };
+      delete updatedNotes[hospital];
+      setHospitalNotes(updatedNotes);
       const updatedDocs = { ...hospitalDocuments };
-      updatedDocs[selectedHospital].push(file);
+      delete updatedDocs[hospital];
       setHospitalDocuments(updatedDocs);
+
+      alert("Hospital deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting hospital:", error);
+      alert("Failed to delete hospital.");
     }
+  };
+
+  // Navigate to the medical files page for a specific hospital
+  const handleNavigateToMedicalFiles = (hospital) => {
+    navigate("/medicalfiles", {
+      state: {
+        hospitalName: hospital,
+        hospitalNotes: hospitalNotes[hospital],
+        hospitalDocuments: hospitalDocuments[hospital],
+      },
+    });
   };
 
   return (
@@ -92,8 +256,9 @@ function ProfilePage() {
           flexDirection: "column",
           alignItems: "flex-start",
           justifyContent: "flex-start",
-          backgroundColor: "#d0f0c0", // Pastel Green Background
-          padding: "20px",
+          backgroundColor: "#d0f0c0",
+          padding: "30px",
+          paddingLeft: "30px",
           borderRight: "2px solid #e0e0e0",
         }}
       >
@@ -103,10 +268,14 @@ function ProfilePage() {
         <Paper
           elevation={3}
           sx={{
-            padding: "20px",
-            borderRadius: "15px",
-            width: "100%",
-            backgroundColor: "#e8f5e9", // Light Green Background
+            padding: "30px",
+            borderRadius: "20px",
+            width: "80%",
+            backgroundColor: "#e8f5e9",
+            boxShadow: "0px 10px 10px rgba(0, 0, 0, 0.1)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
           {isEditing ? (
@@ -117,7 +286,6 @@ function ProfilePage() {
                 value={userData.name}
                 onChange={handleInputChange}
                 fullWidth
-                margin="normal"
               />
               <TextField
                 label="Age"
@@ -164,7 +332,7 @@ function ProfilePage() {
                 color="primary"
                 onClick={handleSaveProfile}
                 fullWidth
-                sx={{ mt: 2 }}
+                sx={{ mt: 1 }}
               >
                 Save Profile
               </Button>
@@ -180,11 +348,21 @@ function ProfilePage() {
                 <Typography variant="h6" fontWeight="bold">
                   {userData.name || "John Doe"}
                 </Typography>
-                <Typography>Age: {userData.age || "28"}</Typography>
-                <Typography>Blood Group: {userData.bloodGroup || "O+"}</Typography>
-                <Typography>DOB: {userData.dob || "01-01-1996"}</Typography>
-                <Typography>Height: {userData.height || "5'9\""}</Typography>
-                <Typography>Weight: {userData.weight || "70kg"}</Typography>
+                <Typography variant="body1" sx={{ marginBottom: "4px" }}>
+                  Age: {userData.age || "28"}
+                </Typography>
+                <Typography variant="body1" sx={{ marginBottom: "4px" }}>
+                  Blood Group: {userData.bloodGroup || "O+"}
+                </Typography>
+                <Typography variant="body1" sx={{ marginBottom: "4px" }}>
+                  DOB: {userData.dob || "01-01-1996"}
+                </Typography>
+                <Typography variant="body1" sx={{ marginBottom: "4px" }}>
+                  Height: {userData.height || "5'9\""}
+                </Typography>
+                <Typography variant="body1">
+                  Weight: {userData.weight || "70kg"}
+                </Typography>
               </Box>
             </>
           )}
@@ -211,14 +389,18 @@ function ProfilePage() {
             onChange={(e) => setHospitalName(e.target.value)}
             fullWidth
           />
-          <Button variant="contained" color="primary" onClick={handleAddHospital}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAddHospital}
+          >
             Add
           </Button>
         </Box>
         <Box
           sx={{
             display: "flex",
-            flexWrap: "wrap",
+            flexDirection: "column",
             gap: 2,
             overflowY: "auto",
             maxHeight: "calc(100% - 100px)",
@@ -236,54 +418,34 @@ function ProfilePage() {
                 backgroundColor: "#e8f5e9",
                 cursor: "pointer",
                 position: "relative",
-                flexGrow: 1,
-                minWidth: "150px",
+                width: "100%",
               }}
-              onDoubleClick={() => handleSelectHospital(hospital)}
+              onClick={() => handleNavigateToMedicalFiles(hospital)}
             >
               <CardContent>
-                <Typography>{hospital}</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "100%",
+                  }}
+                >
+                  <Typography>{hospital}</Typography>
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteHospital(hospital);
+                    }}
+                    color="error"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
               </CardContent>
-              <input
-                type="file"
-                onChange={handleUploadDocument}
-                style={{ marginTop: "10px" }}
-              />
-              <IconButton
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteHospital(hospital);
-                }}
-                sx={{ position: "absolute", top: "5px", right: "5px" }}
-              >
-                <DeleteIcon />
-              </IconButton>
             </Card>
           ))}
         </Box>
-      </Box>
-
-      {/* Chatbot Section */}
-      <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#e0f7fa",
-          borderLeft: "2px solid #e0e0e0",
-        }}
-      >
-        <Typography variant="h6" fontWeight="bold" mb={2}>
-          Chatbot
-        </Typography>
-        <IconButton sx={{ backgroundColor: "#4caf50", color: "white", mb: 2 }}>
-          <ChatIcon sx={{ fontSize: 40 }} />
-        </IconButton>
-        <Typography variant="body1" mt={2}>
-          Search for home remedies or ask health-related questions!
-        </Typography>
       </Box>
     </Box>
   );
