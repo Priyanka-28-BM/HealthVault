@@ -1,15 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../config/supabaseClient"; 
 import { Box, Paper, Typography, TextField, Button } from "@mui/material";
 
 const Signup = () => {
-    // State variables for user input and error handling
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [isRegistered, setIsRegistered] = useState(false); // To track if user is already registered
     const navigate = useNavigate();
+
+    // Check if user is already registered
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                setIsRegistered(true);
+            }
+        };
+        checkUser();
+    }, []);
 
     // Handle form submission
     const handleSubmit = async (e) => {
@@ -21,7 +32,6 @@ const Signup = () => {
         }
 
         try {
-            // Sign up the user with Supabase authentication
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
@@ -31,8 +41,7 @@ const Signup = () => {
                 throw authError;
             }
 
-            // Insert user profile into the `profiles` table
-            const { data: profileData, error: profileError } = await supabase
+            const { error: profileError } = await supabase
                 .from("profiles")
                 .insert([{ id: authData.user.id, name, email }]);
 
@@ -41,89 +50,54 @@ const Signup = () => {
             }
 
             alert("Signup successful! Check your email for confirmation.");
-            navigate("/login"); // Redirect to login page
+            navigate("/login"); 
         } catch (err) {
             setError(err.message);
         }
     };
 
-    const paperStyle = {
-        padding: "2rem",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        boxShadow: "10px 10px 10px 10px",
-        borderRadius: "15px",
-        margin: "100px auto",
-    };
-
-    const heading = {
-        fontSize: "2.5rem",
-        fontWeight: "600vw",
-        marginBottom: "10px",
-    };
-
-    const row = {
-        marginBottom: "15px",
-        width: "80%",
-    };
-
-    const btnStyle = {
-        marginTop: "10px",
-        padding: "10px 20px",
-        backgroundColor: "blue",
-        color: "white",
-        fontSize: "1rem",
-        fontWeight: "bold",
-    };
-
     return (
         <Box align="center">
-            <Paper
-                style={paperStyle}
+            <Paper 
                 sx={{
-                    width: {
-                        xs: "80vw",
-                        sm: "50vw",
-                        md: "40vw",
-                        lg: "30vw",
-                        xl: "20vw",
-                    },
-                    height: "60vh",
+                    p: 4, mt: 8,
+                    width: { xs: "80vw", sm: "50vw", md: "40vw", lg: "30vw", xl: "20vw" },
+                    boxShadow: 3, borderRadius: 2, textAlign: "center"
                 }}
             >
                 <form onSubmit={handleSubmit}>
-                    <Typography style={heading}>Signup</Typography>
-                    {error && <Typography style={{ color: "red" }}>{error}</Typography>}
+                    <Typography variant="h4" fontWeight="bold">Signup</Typography>
+                    {error && <Typography color="error" sx={{ mt: 1 }}>{error}</Typography>}
                     
                     <TextField
-                        style={row}
-                        sx={{ label: { fontWeight: "700", fontSize: "1.3rem" } }}
-                        label="Enter Name"
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        fullWidth label="Enter Name" type="text" 
+                        value={name} onChange={(e) => setName(e.target.value)}
+                        sx={{ mt: 2 }}
                     />
                     <TextField
-                        style={row}
-                        sx={{ label: { fontWeight: "700", fontSize: "1.3rem" } }}
-                        label="Enter Email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        fullWidth label="Enter Email" type="email" 
+                        value={email} onChange={(e) => setEmail(e.target.value)}
+                        sx={{ mt: 2 }}
                     />
                     <TextField
-                        style={row}
-                        sx={{ label: { fontWeight: "700", fontSize: "1.3rem" } }}
-                        label="Enter Password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        fullWidth label="Enter Password" type="password" 
+                        value={password} onChange={(e) => setPassword(e.target.value)}
+                        sx={{ mt: 2 }}
                     />
-                    <Button variant="contained" type="submit" style={btnStyle}>
+                    <Button variant="contained" type="submit" sx={{ mt: 3, px: 4 }}>
                         Sign Up
                     </Button>
                 </form>
+
+                {/* Show login link if user is already registered */}
+                {isRegistered && (
+                    <Typography sx={{ mt: 2 }}>
+                        Already have an account?{" "}
+                        <Button onClick={() => navigate("/login")} color="primary">
+                            Login here
+                        </Button>
+                    </Typography>
+                )}
             </Paper>
         </Box>
     );

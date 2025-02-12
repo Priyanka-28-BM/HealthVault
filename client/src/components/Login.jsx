@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { Box, Button, Paper, TextField, Typography } from "@mui/material";
+import { Box, Button, Paper, TextField, Typography, IconButton, InputAdornment } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../config/supabaseClient"; // Ensure this is correctly configured
+import { supabase } from "../config/supabaseClient";
 
 const Login = () => {
   // State variables for email, password, and error messages
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -33,17 +35,13 @@ const Login = () => {
     setError("");
 
     try {
-      // Authenticate user with Supabase using email and password
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
       if (error) {
         setError(error.message || "Login failed. Please try again.");
       } else {
         console.log("Login successful:", data);
-        navigate("/home"); // Redirect to homepage
+        navigate("/home");
       }
     } catch (err) {
       setError("Something went wrong. Please check your connection and try again.");
@@ -55,41 +53,57 @@ const Login = () => {
       <Paper
         style={paperstyle}
         sx={{
-          width: {
-            xs: "80vw",
-            sm: "50vw",
-            md: "40vw",
-            lg: "30vw",
-            xl: "20vw",
-          },
-          height: "60vh",
+          p: 4,
+          mt: 8,
+          width: { xs: "80vw", sm: "50vw", md: "40vw", lg: "30vw", xl: "20vw" },
+          boxShadow: 3,
+          borderRadius: 2,
+          textAlign: "center",
         }}
       >
         <form onSubmit={handleLogin}>
-          <Typography style={heading}>Login</Typography>
+          <Typography variant="h4" fontWeight="bold">Login</Typography>
 
           <TextField
-            style={row}
+            fullWidth
             label="Enter Email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            fullWidth
+            sx={{ mt: 2 }}
             required
           />
           <TextField
-            style={row}
+            fullWidth
             label="Enter Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            fullWidth
+            sx={{ mt: 2 }}
             required
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(!showPassword)}>
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
-          {error && <Typography style={errorText}>{error}</Typography>}
-          <Button variant="contained" type="submit" style={btnStyle}>
+
+          {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
+
+          <Button variant="contained" type="submit" sx={{ mt: 3, px: 4, backgroundColor: "green" }}>
             Login
           </Button>
+
+          <Typography sx={{ mt: 2 }}>
+            Don't have an account?{" "}
+            <Button onClick={() => navigate("/signup")} color="primary">
+              Sign up here
+            </Button>
+          </Typography>
         </form>
       </Paper>
     </Box>
