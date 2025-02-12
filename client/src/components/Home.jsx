@@ -14,6 +14,9 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { supabase } from "../config/supabaseClient"; // Ensure this path is correct
 import CloseIcon from "@mui/icons-material/Close";
+import ChatIcon from "@mui/icons-material/Chat";
+import LogoutIcon from "@mui/icons-material/Logout";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -39,43 +42,83 @@ function ProfilePage() {
 
   // Fetch profile and hospital data on component mount
   useEffect(() => {
-    fetchProfileData();
-    fetchHospitalData();
+    const fetchUserData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        fetchProfileData(user.id);
+        fetchHospitalData(user.id);
+        fetchProfileImage(user.id);
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   // Fetch profile data from Supabase
-  const fetchProfileData = async () => {
+  const fetchProfileData = async (userId) => {
     try {
       const { data, error } = await supabase
         .from("profile_details")
         .select("*")
-        .single(); // Fetch the first profile entry
-
+        .eq("user_id", userId);
+  
       if (error) throw error;
-
-      if (data) {
-        // Map database column names to React state keys
+  
+      if (data && data.length > 0) {
+        const profile = data[0]; // Get first record
         setUserData({
-          name: data.name,
-          age: data.age,
-          bloodGroup: data.blood_group, // Map blood_group to bloodGroup
-          dob: data.dob,
-          height: data.height,
-          weight: data.weight,
+          name: profile.name, // Changed from data.name to profile.name
+          age: profile.age,
+          bloodGroup: profile.blood_group,
+          dob: profile.dob,
+          height: profile.height,
+          weight: profile.weight,
         });
-        setIsEditing(false); // Disable editing mode if data exists
+        setIsEditing(false);
       }
     } catch (error) {
       console.error("Error fetching profile data:", error);
     }
   };
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const { data: { user } } = await supabase.auth.getUser();
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${user.id}/avatar.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("profile_images")
+      .upload(fileName, file, {
+        cacheControl: "3600",
+        upsert: true,
+      });
+
+    if (uploadError) {
+      alert("Error uploading image: " + uploadError.message);
+      return;
+    }
+
+    const { data: urlData } = await supabase.storage
+      .from("profile_images")
+      .getPublicUrl(fileName);
+
+    setProfileImageUrl(urlData.publicUrl + `?t=${Date.now()}`);
+  };
+
+
+
+
+
 
   // Fetch hospital data from Supabase
-  const fetchHospitalData = async () => {
+  const fetchHospitalData = async (userId) => {
     try {
       const { data: hospitalsData, error: hospitalsError } = await supabase
         .from("hospital_name")
-        .select("name");
+        .select("name")
+        .eq("user_id", userId); // Fetch hospital data for the logged-in user
 
       if (hospitalsError) throw hospitalsError;
 
@@ -83,14 +126,14 @@ function ProfilePage() {
         const hospitalNames = hospitalsData.map((hospital) => hospital.name);
         setHospitals(hospitalNames);
 
-        // Fetch notes and documents for each hospital
         const notes = {};
         const documents = {};
         for (const hospital of hospitalNames) {
           const { data: notesData, error: notesError } = await supabase
             .from("notes")
             .select("note")
-            .eq("hospital_name", hospital);
+            .eq("hospital_name", hospital)
+            .eq("user_id", userId);
 
           if (notesError) throw notesError;
 
@@ -100,7 +143,7 @@ function ProfilePage() {
 
           const { data: filesData, error: filesError } = await supabase.storage
             .from("medical_files")
-            .list(`${hospital}/`);
+            .list(`${userId}/${hospital}/`);
 
           if (filesError) throw filesError;
 
@@ -126,6 +169,17 @@ function ProfilePage() {
     }
   };
 
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
   // Handle input changes for profile fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -139,11 +193,12 @@ function ProfilePage() {
       return;
     }
 
-    // Map React state keys to database column names
+    const { data: { user } } = await supabase.auth.getUser();
     const dataToInsert = {
+      user_id: user.id, // Include user_id to associate profile with the user
       name: userData.name,
       age: userData.age,
-      blood_group: userData.bloodGroup, // Map bloodGroup to blood_group
+      blood_group: userData.bloodGroup,
       dob: userData.dob,
       height: userData.height,
       weight: userData.weight,
@@ -152,7 +207,7 @@ function ProfilePage() {
     try {
       const { data, error } = await supabase
         .from("profile_details")
-        .upsert([dataToInsert], { onConflict: "name" }); // Upsert to update or insert
+        .upsert([dataToInsert], { onConflict: "user_id" }); // Upsert based on user_id
 
       if (error) throw error;
 
@@ -174,15 +229,15 @@ function ProfilePage() {
       return;
     }
 
+    const { data: { user } } = await supabase.auth.getUser();
+
     try {
-      // Insert hospital name into the `hospital_name` table
       const { data, error } = await supabase
         .from("hospital_name")
-        .insert([{ name: hospitalName }]);
+        .insert([{ user_id: user.id, name: hospitalName }]); // Include user_id
 
       if (error) throw error;
 
-      // Update local state
       setHospitals([...hospitals, hospitalName]);
       setHospitalNotes({ ...hospitalNotes, [hospitalName]: "" });
       setHospitalDocuments({
@@ -206,15 +261,15 @@ function ProfilePage() {
   // Delete hospital from Supabase
   const handleDeleteHospital = async (hospital) => {
     try {
-      // Delete hospital from the `hospital_name` table
+      const { data: { user } } = await supabase.auth.getUser();
       const { data, error } = await supabase
         .from("hospital_name")
         .delete()
-        .eq("name", hospital);
+        .eq("name", hospital)
+        .eq("user_id", user.id); // Ensure the hospital belongs to the logged-in user
 
       if (error) throw error;
 
-      // Update local state
       setHospitals(hospitals.filter((h) => h !== hospital));
       const updatedNotes = { ...hospitalNotes };
       delete updatedNotes[hospital];
@@ -264,6 +319,7 @@ function ProfilePage() {
 
   return (
     <Box
+    
       sx={{
         display: "flex",
         flexDirection: "row",
@@ -272,7 +328,10 @@ function ProfilePage() {
         backgroundColor: "#f5f5f5",
         overflow: "hidden",
       }}
+      
     >
+      
+
       {/* Profile Section */}
       <Box
         sx={{
@@ -281,8 +340,6 @@ function ProfilePage() {
           flexDirection: "column",
           alignItems: "flex-start",
           justifyContent: "flex-start",
-          backgroundColor: "#d0f0c0",
-          padding: "20px",
           backgroundColor: "#d0f0c0",
           padding: "30px",
           paddingLeft: "30px",
@@ -303,12 +360,34 @@ function ProfilePage() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            padding: "20px",
-            borderRadius: "15px",
-            width: "100%",
-            backgroundColor: "#e8f5e9",
+            position: "relative", // Add this for proper positioning context
           }}
         >
+
+<Box
+        sx={{
+          position: "fixed",
+          top: 16,
+          right: 16,
+          zIndex: 1000,
+        }}
+      >
+        <IconButton
+          color="error"
+          onClick={handleLogout}
+          sx={{
+            backgroundColor: "pastle green",
+            "&:hover": {
+              backgroundColor: "#cc0000",
+            },
+          }}
+        >
+          <LogoutIcon />
+        </IconButton>
+      </Box>
+
+
+
           {isEditing ? (
             <>
               <TextField
@@ -365,35 +444,28 @@ function ProfilePage() {
                 fullWidth
                 sx={{ mt: 1 }}
               >
-              <TextField label="Name" name="name" value={userData.name} onChange={handleInputChange} fullWidth margin="normal" />
-              <TextField label="Age" name="age" value={userData.age} onChange={handleInputChange} fullWidth margin="normal" />
-              <TextField label="Blood Group" name="bloodGroup" value={userData.bloodGroup} onChange={handleInputChange} fullWidth margin="normal" />
-              <TextField label="Date of Birth" name="dob" value={userData.dob} onChange={handleInputChange} fullWidth margin="normal" />
-              <TextField label="Height" name="height" value={userData.height} onChange={handleInputChange} fullWidth margin="normal" />
-              <TextField label="Weight" name="weight" value={userData.weight} onChange={handleInputChange} fullWidth margin="normal" />
-              <Button variant="contained" color="primary" onClick={handleSaveProfile} fullWidth sx={{ mt: 2 }}>
                 Save Profile
               </Button>
             </>
           ) : (
             <>
-              <Avatar src="https://via.placeholder.com/150" alt="Profile" sx={{ width: 120, height: 120, marginBottom: "20px" }} />
+              <Avatar src="https://via.placeholder.com/150" alt="Profile" onError={(e) => { e.target.src = 'https://picsum.photos/150'; }} />
               <Typography variant="h6" fontWeight="bold">{userData.name || "John Doe"}</Typography>
               <Typography variant="body1" sx={{ marginBottom: "4px" }}>
-                  Age: {userData.age || "28"}
-                </Typography>
+                Age: {userData.age || "28"}
+              </Typography>
               <Typography variant="body1" sx={{ marginBottom: "4px" }}>
-                  Blood Group: {userData.bloodGroup || "O+"}
-                </Typography>
+                Blood Group: {userData.bloodGroup || "O+"}
+              </Typography>
               <Typography variant="body1" sx={{ marginBottom: "4px" }}>
-                  DOB: {userData.dob || "01-01-1996"}
-                </Typography>
+                DOB: {userData.dob || "01-01-1996"}
+              </Typography>
               <Typography variant="body1" sx={{ marginBottom: "4px" }}>
-                  Height: {userData.height || "5'9\""}
-                </Typography>
+                Height: {userData.height || "5'9\""}
+              </Typography>
               <Typography variant="body1">
-                  Weight: {userData.weight || "70kg"}
-                </Typography>
+                Weight: {userData.weight || "70kg"}
+              </Typography>
             </>
           )}
         </Paper>
@@ -491,29 +563,29 @@ function ProfilePage() {
             <IconButton onClick={() => setIsChatOpen(false)}><CloseIcon /></IconButton>
           </Box>
           <Box sx={{ flex: 1, overflowY: "auto", padding: 1, display: "flex", flexDirection: "column", gap: 1 }}>
-      {chatMessages.map((msg, i) => (
-        <Box
-          key={i}
-          sx={{
-            alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
-            backgroundColor: msg.role === "user" ? "#4caf50" : "#f0f0f0",
-            color: msg.role === "user" ? "white" : "black",
-            padding: "10px 14px",
-            borderRadius: "16px",
-            maxWidth: "75%",
-            fontSize: "14px",
-            wordBreak: "break-word",
-            boxShadow: 1,
-          }}
-        >
-          <Typography variant="body2" fontWeight="bold">
-            {msg.role === "user" ? "You" : "Bot"}
-          </Typography>
-          <Typography variant="body2">{msg.content}</Typography>
-        </Box>
-      ))}
-    </Box>
-            <TextField value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Type a message..." fullWidth variant="outlined" sx={{ mt: 1 }} onKeyPress={(e) => e.key === "Enter" && handleSendMessage()} />
+            {chatMessages.map((msg, i) => (
+              <Box
+                key={i}
+                sx={{
+                  alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
+                  backgroundColor: msg.role === "user" ? "#4caf50" : "#f0f0f0",
+                  color: msg.role === "user" ? "white" : "black",
+                  padding: "10px 14px",
+                  borderRadius: "16px",
+                  maxWidth: "75%",
+                  fontSize: "14px",
+                  wordBreak: "break-word",
+                  boxShadow: 1,
+                }}
+              >
+                <Typography variant="body2" fontWeight="bold">
+                  {msg.role === "user" ? "You" : "Bot"}
+                </Typography>
+                <Typography variant="body2">{msg.content}</Typography>
+              </Box>
+            ))}
+          </Box>
+          <TextField value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Type a message..." fullWidth variant="outlined" sx={{ mt: 1 }} onKeyPress={(e) => e.key === "Enter" && handleSendMessage()} />
         </Box>
       )}
     </Box>
