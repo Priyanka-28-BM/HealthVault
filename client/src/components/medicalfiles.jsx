@@ -152,13 +152,13 @@ function MedicalFiles() {
     }
   };
 
-  // Open image in modal
+  // Open image in model
   const handleImageClick = (imageUrl) => {
     setSelectedImage(imageUrl);
     setOpenModal(true);
   };
 
-  // Close modal
+  // Close model
   const handleCloseModal = () => {
     setOpenModal(false);
     setSelectedImage("");

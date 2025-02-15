@@ -296,7 +296,7 @@ function ProfilePage() {
       },
     });
   };
-
+  //chatbot handle
   const handleSendMessage = async () => {
     if (!chatInput.trim()) return;
     const newMessages = [...chatMessages, { role: "user", content: chatInput }];
@@ -334,7 +334,6 @@ function ProfilePage() {
       
 
       {/* Profile Section */}
-      {/* Profile Section */}
 <Box
   sx={{
     flex: 1,
@@ -367,7 +366,7 @@ function ProfilePage() {
       flexDirection: "column",
       alignItems: "center",
       position: "relative",
-      textAlign: "center", // Centers the text for better readability
+      textAlign: "center", 
     }}
   >
     {/* Logout Button - Positioned at the Top Right */}
@@ -569,7 +568,7 @@ function ProfilePage() {
             handleDeleteHospital(hospital);
           }}
           color="error"
-          sx={{ marginRight: "40px" }} // Moves the delete icon slightly left
+          sx={{ marginRight: "40px" }} 
         >
           <DeleteIcon />
         </IconButton>

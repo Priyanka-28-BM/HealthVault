@@ -89,8 +89,8 @@ const Login = () => {
           justifyContent: 'center',
           alignItems: 'center',
           backgroundImage: 'url("https://i.pinimg.com/736x/84/44/4c/84444c1440e6c2463f6c1bc6aa159448.jpg")', // Replace with your image URL
-          backgroundSize: 'cover', // Ensures the image covers the entire box
-          backgroundPosition: 'center', // Centers the image
+          backgroundSize: 'cover', 
+          backgroundPosition: 'center', 
           backgroundRepeat: 'no-repeat' // Prevents image repetition
         }}
       >
@@ -98,7 +98,7 @@ const Login = () => {
           sx={{
             p: 4,
             width: "70%",
-            maxWidth: "600", //////////////////////////
+            maxWidth: "600",
             boxShadow: 3,
             borderRadius: 2,
             textAlign: "center",
