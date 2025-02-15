@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Box, Button, Paper, TextField, Typography, IconButton, InputAdornment } from "@mui/material";
+import {
+  Box,
+  Button,
+  Paper,
+  TextField,
+  Typography,
+  IconButton,
+  InputAdornment,
+} from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../config/supabaseClient";
@@ -35,7 +43,10 @@ const Login = () => {
     setError("");
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
       if (error) {
         setError(error.message || "Login failed. Please try again.");
@@ -44,68 +55,120 @@ const Login = () => {
         navigate("/home");
       }
     } catch (err) {
-      setError("Something went wrong. Please check your connection and try again.");
+      setError(
+        "Something went wrong. Please check your connection and try again."
+      );
     }
   };
 
   return (
-    <Box align="center">
-      <Paper
-        style={paperstyle}
+    <Box sx={{ display: "flex", height: "100vh" ,width:'100vw'}}>
+      {/* Left half with image */}
+      <Box
         sx={{
-          p: 4,
-          mt: 8,
-          width: { xs: "80vw", sm: "50vw", md: "40vw", lg: "30vw", xl: "20vw" },
-          boxShadow: 3,
-          borderRadius: 2,
-          textAlign: "center",
+          width: "50%",
+          height: "97%",
+          overflow: "hidden",
         }}
       >
-        <form onSubmit={handleLogin}>
-          <Typography variant="h4" fontWeight="bold">Login</Typography>
+        <img
+          src="/src/images/login-page.jpg" // Update with your image path
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        />
+      </Box>
 
-          <TextField
-            fullWidth
-            label="Enter Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            sx={{ mt: 2 }}
-            required
-          />
-          <TextField
-            fullWidth
-            label="Enter Password"
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            sx={{ mt: 2 }}
-            required
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
+      {/* Right half with form */}
+      <Box
+        sx={{
+          width: '50%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundImage: 'url("https://i.pinimg.com/736x/84/44/4c/84444c1440e6c2463f6c1bc6aa159448.jpg")', // Replace with your image URL
+          backgroundSize: 'cover', // Ensures the image covers the entire box
+          backgroundPosition: 'center', // Centers the image
+          backgroundRepeat: 'no-repeat' // Prevents image repetition
+        }}
+      >
+        <Paper
+          sx={{
+            p: 4,
+            width: "70%",
+            maxWidth: "600", //////////////////////////
+            boxShadow: 3,
+            borderRadius: 2,
+            textAlign: "center",
+          }}
+        >
+          <form onSubmit={handleLogin}>
+            <Typography variant="h4" fontWeight="bold">
+              Login
+            </Typography>
 
-          {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
+            <TextField
+              fullWidth
+              label="Enter Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              sx={{ mt: 2 }}
+              required
+            />
+            <TextField
+              fullWidth
+              label="Enter Password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              sx={{ mt: 2 }}
+              required
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
 
-          <Button variant="contained" type="submit" sx={{ mt: 3, px: 4, backgroundColor: "green" }}>
-            Login
-          </Button>
+            {error && (
+              <Typography color="error" sx={{ mt: 2 }}>
+                {error}
+              </Typography>
+            )}
 
-          <Typography sx={{ mt: 2 }}>
-            Don't have an account?{" "}
-            <Button onClick={() => navigate("/signup")} color="primary">
-              Sign up here
+            <Button
+              variant="contained"
+              type="submit"
+              sx={{
+                mt: 3,
+                px: 4,
+                backgroundColor: "green",
+                "&:hover": { backgroundColor: "darkgreen" },
+              }}
+            >
+              Login
             </Button>
-          </Typography>
-        </form>
-      </Paper>
+
+            <Typography sx={{ mt: 2 }}>
+              Don't have an account?{" "}
+              <Button
+                onClick={() => navigate("/signup")}
+                color="primary"
+                sx={{ textTransform: "none" }}
+              >
+                Sign up here
+              </Button>
+            </Typography>
+          </form>
+        </Paper>
+      </Box>
     </Box>
   );
 };

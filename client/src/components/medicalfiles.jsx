@@ -173,133 +173,195 @@ function MedicalFiles() {
   }
 
   return (
-    <Box sx={{ 
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      minHeight: "100vh",
-      backgroundColor: "#f5f5f5",
-      padding: "20px",
-    }}>
-      <Box sx={{
-        width: "90%",
-        maxWidth: "1200px",
-        backgroundColor: "white",
-        borderRadius: "15px",
-        boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-        padding: "20px",
-        overflowY: "auto",
-        maxHeight: "90vh",
-      }}>
-        <Typography variant="h4" fontWeight="bold" mb={4} color="#4caf50">
-          Medical Files for {hospitalName}
-        </Typography>
-
-        <Card sx={{ backgroundColor: "#e8f5e9", mb: 4 }}>
-          <CardContent>
-            <Typography variant="h6" fontWeight="bold" mb={2} color="#2e7d32">
-              Notes
-            </Typography>
-            <TextField
-              label="Add Note"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              fullWidth
-              multiline
-              rows={4}
-              sx={{ mb: 2 }}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddNote}
-              sx={{ backgroundColor: "#4caf50", "&:hover": { backgroundColor: "#388e3c" } }}
-            >
-              Save Note
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card sx={{ backgroundColor: "#e8f5e9", mb: 4 }}>
-          <CardContent>
-            <Typography variant="h6" fontWeight="bold" mb={2} color="#2e7d32">
-              Upload Files
-            </Typography>
-            <Grid container spacing={3}>
-              {["prescription", "labReport", "scanningReport", "additionalFiles"].map((type) => (
-                <Grid item xs={12} sm={6} key={type}>
-                  <Card variant="outlined" sx={{ p: 2 }}>
-                    <Typography variant="body1" fontWeight="bold" mb={1}>
-                      {type.charAt(0).toUpperCase() + type.slice(1).replace(/([A-Z])/g, " $1")}
-                    </Typography>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <input
-                        type="file"
-                        id={`file-upload-${type}`}
-                        hidden
-                        onChange={(e) => handleFileUpload(e, type)}
-                      />
-                      <label htmlFor={`file-upload-${type}`}>
-                        <IconButton
-                          component="span"
-                          sx={{ backgroundColor: "#4caf50", color: "white" }}
-                        >
-                          <CloudUploadIcon />
-                        </IconButton>
-                      </label>
-                      <Typography variant="body2">
-                        {files[type]?.length ? `${files[type].length} file(s) uploaded` : "No file uploaded"}
-                      </Typography>
-                    </Box>
-                    {filePreviews[type] && (
-                      <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 2 }}>
-                        {filePreviews[type].map((preview, index) => (
-                          <img
-                            key={index}
-                            src={preview}
-                            alt={`Preview ${index + 1}`}
-                            style={{
-                              maxWidth: "100%",
-                              maxHeight: "150px",
-                              borderRadius: "4px",
-                              border: "1px solid #ddd",
-                              cursor: "pointer",
-                            }}
-                            onClick={() => handleImageClick(preview)}
-                          />
-                        ))}
-                      </Box>
-                    )}
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </CardContent>
-        </Card>
-      </Box>
-
-      <Modal open={openModal} onClose={handleCloseModal}>
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
-          <Box sx={{
-            backgroundColor: "white",
-            borderRadius: "8px",
-            padding: "20px",
-            position: "relative",
+    <Box
+      sx={{
+        width:'100vw',
+        minHeight: "90vh",
+        backgroundImage: 'url("https://i.pinimg.com/736x/84/44/4c/84444c1440e6c2463f6c1bc6aa159448.jpg")',
+        backgroundSize: "cover",
+        backgroundAttachment: "fixed",
+        display: "flex",
+        padding: "2rem",
+      }}
+    >
+      <Grid container spacing={3} sx={{ height: "fit-content" }}>
+        {/* Left Side - Note Section */}
+        <Grid item xs={12} md={3}>
+          <Card sx={{ 
+            height: "100%",
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            backdropFilter: "blur(5px)",
+            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+            borderRadius: "15px",
           }}>
+            <CardContent>
+              <Typography variant="h5" gutterBottom sx={{ color: "#2e7d32", fontWeight: "bold" }}>
+                Notes for {hospitalName}
+              </Typography>
+              <TextField
+                fullWidth
+                multiline
+                rows={8}
+                variant="outlined"
+                label="Write your notes here"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                sx={{ mb: 2 }}
+              />
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={handleAddNote}
+                sx={{
+                  backgroundColor: "#4caf50",
+                  "&:hover": { backgroundColor: "#388e3c" },
+                  borderRadius: "8px",
+                  py: 1,
+                  fontWeight: "bold",
+                }}
+              >
+                Save Notes
+              </Button>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Right Side - File Management */}
+        <Grid item xs={12} md={9}>
+          <Card sx={{
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            backdropFilter: "blur(5px)",
+            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+            borderRadius: "15px",
+            height: "100%",
+            overflowY: "auto",
+            maxHeight: "100vh",
+          }}>
+            <CardContent>
+              <Typography variant="h4" sx={{ 
+                mb: 4, 
+                color: "#2e7d32",
+                fontWeight: "bold",
+                textAlign: "center",
+              }}>
+                    Medical Files for {hospitalName}
+              </Typography>
+
+              <Grid container spacing={3}>
+                {["prescription", "labReport", "scanningReport", "additionalFiles"].map((type) => (
+                  <Grid item xs={12} sm={6} key={type}>
+                    <Card sx={{
+                      backgroundColor: "#f5f5f5",
+                      borderRadius: "12px",
+                      transition: "transform 0.2s",
+                      "&:hover": { transform: "translateY(-5px)" },
+                    }}>
+                      <CardContent>
+                        <Typography variant="h6" sx={{ 
+                          mb: 2,
+                          color: "#2e7d32",
+                          fontWeight: "medium",
+                        }}>
+                          {type.replace(/([A-Z])/g, " $1").toUpperCase()}
+                        </Typography>
+
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                          <input
+                            type="file"
+                            id={`file-upload-${type}`}
+                            hidden
+                            onChange={(e) => handleFileUpload(e, type)}
+                          />
+                          <label htmlFor={`file-upload-${type}`}>
+                            <IconButton
+                              component="span"
+                              sx={{
+                                backgroundColor: "#4caf50",
+                                color: "white",
+                                "&:hover": { backgroundColor: "#388e3c" },
+                              }}
+                            >
+                              <CloudUploadIcon />
+                            </IconButton>
+                          </label>
+                          <Typography variant="body2" color="textSecondary">
+                            {files[type]?.length || 0} files
+                          </Typography>
+                        </Box>
+
+                        {filePreviews[type] && (
+                          <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
+                            {filePreviews[type].map((preview, index) => (
+                              <img
+                                key={index}
+                                src={preview}
+                                alt={`Preview ${index + 1}`}
+                                style={{
+                                  width: "80px",
+                                  height: "80px",
+                                  objectFit: "cover",
+                                  borderRadius: "8px",
+                                  cursor: "pointer",
+                                  border: "2px solid #e0e0e0",
+                                }}
+                                onClick={() => handleImageClick(preview)}
+                              />
+                            ))}
+                          </Box>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Image Preview Modal */}
+      <Modal open={openModal} onClose={handleCloseModal}>
+        <Box sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          backdropFilter: "blur(8px)",
+        }}>
+          <Box sx={{
+            position: "relative",
+            maxWidth: "90vw",
+            maxHeight: "90vh",
+            borderRadius: "15px",
+            overflow: "hidden",
+            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+          }}>
+
             <IconButton sx={{ position: "absolute", top: 10, right: 10 }} onClick={handleCloseModal}>
               <CloseIcon />
             </IconButton>
             <IconButton
-              sx={{ position: "absolute", top: 10, left: 10, backgroundColor: "rgba(0, 0, 0, 0.5)", color: "white" }}
+              sx={{
+                position: "absolute",
+                top: 10,
+                right: 10,
+                color: "white",
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                zIndex: 1,
+              }}
               onClick={handleCloseModal}
             >
-              <ArrowBackIcon />
+              <CloseIcon />
             </IconButton>
             <img
               src={selectedImage}
               alt="Full Preview"
-              style={{ maxWidth: "90vw", maxHeight: "90vh" }}
+              style={{
+                width: "100%",
+                height: "auto",
+                maxHeight: "90vh",
+                objectFit: "contain",
+              }}
             />
           </Box>
         </Box>

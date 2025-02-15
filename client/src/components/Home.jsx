@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import LocalHospitalIcon from "@mui/icons-material/LocalHospital"; 
 import {
   Box,
   Typography,
@@ -333,227 +334,281 @@ function ProfilePage() {
       
 
       {/* Profile Section */}
-      <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          justifyContent: "flex-start",
-          backgroundColor: "#d0f0c0",
-          padding: "30px",
-          paddingLeft: "30px",
-          borderRight: "2px solid #e0e0e0",
-        }}
-      >
-        <Typography variant="h5" fontWeight="bold" mb={2}>
-          Profile Information
-        </Typography>
-        <Paper
-          elevation={3}
-          sx={{
-            padding: "30px",
-            borderRadius: "20px",
-            width: "80%",
-            backgroundColor: "#e8f5e9",
-            boxShadow: "0px 10px 10px rgba(0, 0, 0, 0.1)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            position: "relative", // Add this for proper positioning context
-          }}
-        >
-
+      {/* Profile Section */}
 <Box
+  sx={{
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    backgroundImage: 'url("https://i.pinimg.com/474x/2b/a7/bb/2ba7bbe33b4368d173f4085f440d55f6.jpg")',
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    padding: "30px",
+    borderRight: "2px solid #e0e0e0",
+  }}
+>
+  <Typography variant="h5" fontWeight="bold" mb={2} color="white">
+    Profile Information
+  </Typography>
+
+  <Paper
+    elevation={6}
+    sx={{
+      padding: "30px",
+      borderRadius: "20px",
+      width: "85%",
+      maxWidth: "400px", // Limits max width for a clean look
+      backgroundColor: "white",
+      boxShadow: "5px 5px 15px rgba(0, 0, 0, 0.2)",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      position: "relative",
+      textAlign: "center", // Centers the text for better readability
+    }}
+  >
+    {/* Logout Button - Positioned at the Top Right */}
+    <Box
+      sx={{
+        position: "absolute",
+        top: 16,
+        right: 16,
+        zIndex: 1000,
+      }}
+    >
+      <IconButton
+        color="error"
+        onClick={handleLogout}
         sx={{
-          position: "fixed",
-          top: 16,
-          right: 16,
-          zIndex: 1000,
+          backgroundColor: "lightgreen", // Pastel Green
+          "&:hover": {
+            backgroundColor: "#cc0000",
+          },
         }}
       >
-        <IconButton
-          color="error"
-          onClick={handleLogout}
+        <LogoutIcon />
+      </IconButton>
+    </Box>
+
+    {isEditing ? (
+      <>
+        <TextField label="Name" name="name" value={userData.name} onChange={handleInputChange} fullWidth />
+        <TextField label="Age" name="age" value={userData.age} onChange={handleInputChange} fullWidth margin="normal" />
+        <TextField label="Blood Group" name="bloodGroup" value={userData.bloodGroup} onChange={handleInputChange} fullWidth margin="normal" />
+        <TextField label="Date of Birth" name="dob" value={userData.dob} onChange={handleInputChange} fullWidth margin="normal" />
+        <TextField label="Height" name="height" value={userData.height} onChange={handleInputChange} fullWidth margin="normal" />
+        <TextField label="Weight" name="weight" value={userData.weight} onChange={handleInputChange} fullWidth margin="normal" />
+
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSaveProfile}
+          fullWidth
+          sx={{ mt: 2, borderRadius: "10px" }}
+        >
+          Save Profile
+        </Button>
+      </>
+    ) : (
+      <>
+        <Avatar
+          src="https://via.placeholder.com/150"
+          alt="Profile"
+          sx={{ width: 90, height: 90, marginBottom: 2 }}
+          onError={(e) => { e.target.src = 'https://picsum.photos/150'; }}
+        />
+        <Typography variant="h6" fontWeight="bold" color="black">
+          {userData.name || "John Doe"}
+        </Typography>
+        <Typography variant="body1" sx={{ marginBottom: "4px", fontSize: "16px", color: "#333", textAlign: "justify" }}>
+          Age: {userData.age || "28"}
+        </Typography>
+        <Typography variant="body1" sx={{ marginBottom: "4px", fontSize: "16px", color: "#333", textAlign: "justify" }}>
+          Blood Group: {userData.bloodGroup || "O+"}
+        </Typography>
+        <Typography variant="body1" sx={{ marginBottom: "4px", fontSize: "16px", color: "#333", textAlign: "justify" }}>
+          DOB: {userData.dob || "01-01-1996"}
+        </Typography>
+        <Typography variant="body1" sx={{ marginBottom: "4px", fontSize: "16px", color: "#333", textAlign: "justify" }}>
+          Height: {userData.height || "5'9\""}
+        </Typography>
+        <Typography variant="body1" sx={{ fontSize: "16px", color: "#333", textAlign: "justify" }}>
+          Weight: {userData.weight || "70kg"}
+        </Typography>
+
+        {/* Motivational Quote After Saving Profile */}
+        <Typography
+          variant="body2"
           sx={{
-            backgroundColor: "pastle green",
-            "&:hover": {
-              backgroundColor: "#cc0000",
-            },
+            marginTop: 3,
+            fontStyle: "italic",
+            color: "#4CAF50", // Green shade for positivity
+            fontWeight: "bold",
           }}
         >
-          <LogoutIcon />
-        </IconButton>
-      </Box>
+          "Take care of your body. It's the only place you have to live. 🌿"
+        </Typography>
+      </>
+    )}
+  </Paper>
+</Box>
 
-
-
-          {isEditing ? (
-            <>
-              <TextField
-                label="Name"
-                name="name"
-                value={userData.name}
-                onChange={handleInputChange}
-                fullWidth
-              />
-              <TextField
-                label="Age"
-                name="age"
-                value={userData.age}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Blood Group"
-                name="bloodGroup"
-                value={userData.bloodGroup}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Date of Birth"
-                name="dob"
-                value={userData.dob}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Height"
-                name="height"
-                value={userData.height}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Weight"
-                name="weight"
-                value={userData.weight}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSaveProfile}
-                fullWidth
-                sx={{ mt: 1 }}
-              >
-                Save Profile
-              </Button>
-            </>
-          ) : (
-            <>
-              <Avatar src="https://via.placeholder.com/150" alt="Profile" onError={(e) => { e.target.src = 'https://picsum.photos/150'; }} />
-              <Typography variant="h6" fontWeight="bold">{userData.name || "John Doe"}</Typography>
-              <Typography variant="body1" sx={{ marginBottom: "4px" }}>
-                Age: {userData.age || "28"}
-              </Typography>
-              <Typography variant="body1" sx={{ marginBottom: "4px" }}>
-                Blood Group: {userData.bloodGroup || "O+"}
-              </Typography>
-              <Typography variant="body1" sx={{ marginBottom: "4px" }}>
-                DOB: {userData.dob || "01-01-1996"}
-              </Typography>
-              <Typography variant="body1" sx={{ marginBottom: "4px" }}>
-                Height: {userData.height || "5'9\""}
-              </Typography>
-              <Typography variant="body1">
-                Weight: {userData.weight || "70kg"}
-              </Typography>
-            </>
-          )}
-        </Paper>
-      </Box>
 
       {/* Hospital Management Section */}
-      <Box
+<Box
+  sx={{
+    flex: 2,
+    display: "flex",
+    flexDirection: "column",
+    padding: "20px",
+    backgroundImage: 'url("https://i.pinimg.com/736x/84/44/4c/84444c1440e6c2463f6c1bc6aa159448.jpg")',
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+  }}
+>
+  <Typography variant="h5" fontWeight="bold" mb={2}>
+    Manage Hospitals
+  </Typography>
+  <Box sx={{ display: "flex", gap: 2, mb: 2, border: "1.5px solid black" }}>
+    <TextField
+      label="Add Hospital"
+      value={hospitalName}
+      onChange={(e) => setHospitalName(e.target.value)}
+      fullWidth
+    />
+    <Button variant="contained" color="primary" onClick={handleAddHospital}>
+      Add
+    </Button>
+  </Box>
+
+  {/* Hospital List Section */}
+  <Box
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      gap: 2,
+      overflowY: "auto",
+      overflowX: "hidden", // Prevents horizontal scrollbar
+      maxHeight: "calc(100% - 100px)",
+      "&::-webkit-scrollbar": {
+        width: "0px", // Hide vertical scrollbar
+      },
+    }}
+  >
+    {hospitals.map((hospital) => (
+      <Card
+        key={hospital}
         sx={{
-          flex: 2,
           display: "flex",
-          flexDirection: "column",
-          padding: "20px",
-          backgroundColor: "#ffffff",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "15px",
+          borderRadius: "10px",
+          backgroundColor: "white",
+          width: "100%",
+          minHeight: "50px",
+          color: "#333",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+          overflow: "hidden",
+          transition: "transform 0.3s ease-in-out",
+          "&:hover": {
+            transform: "scale(1.02)",
+          },
         }}
+        onClick={() => handleNavigateToMedicalFiles(hospital)}
       >
-        <Typography variant="h5" fontWeight="bold" mb={2}>
-          Manage Hospitals
-        </Typography>
-        <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
-          <TextField
-            label="Add Hospital"
-            value={hospitalName}
-            onChange={(e) => setHospitalName(e.target.value)}
-            fullWidth
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAddHospital}
-          >
-            Add
-          </Button>
-        </Box>
+        {/* Hospital Icon Container */}
         <Box
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            overflowY: "auto",
-            maxHeight: "calc(100% - 100px)",
+            width: 50,
+            height: 50,
+            minWidth: 50,
+            borderRadius: "8px",
+            overflow: "hidden",
+            marginRight: "15px",
+            backgroundColor: "white",
           }}
         >
-          {hospitals.map((hospital) => (
-            <Card
-              key={hospital}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                padding: "10px",
-                borderRadius: "10px",
-                backgroundColor: "#e8f5e9",
-                cursor: "pointer",
-                position: "relative",
-                width: "100%",
-              }}
-              onClick={() => handleNavigateToMedicalFiles(hospital)}
-            >
-              <CardContent>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    width: "100%",
-                  }}
-                >
-                  <Typography>{hospital}</Typography>
-                  <IconButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteHospital(hospital);
-                    }}
-                    color="error"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
-              </CardContent>
-            </Card>
-          ))}
+          <img
+            src="/src/images/hospital icon.jpg" // Replace with your image path
+            alt="Hospital"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
         </Box>
-      </Box>
+
+        {/* Hospital Name - Centered and Bold */}
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            {hospital}
+          </Typography>
+        </Box>
+
+        {/* Delete Icon - Moved slightly to the left */}
+        <IconButton
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDeleteHospital(hospital);
+          }}
+          color="error"
+          sx={{ marginRight: "40px" }} // Moves the delete icon slightly left
+        >
+          <DeleteIcon />
+        </IconButton>
+      </Card>
+    ))}
+  </Box>
+</Box>
+
+
+      <Box sx={{ position: "fixed", bottom: 30, right: 40, textAlign: "center" }}>
+      {/* Label Text */}
+      <Typography
+        sx={{
+          fontSize: 14,
+          fontWeight: "bold",
+          color: "white",
+          backgroundColor: "black",
+          padding: "4px 8px",
+          borderRadius: "8px",
+          marginLeft: "200px",
+          display: "inline-block",
+        }}
+      >
+        Ask health-related queries
+      </Typography>
 
       {/* Floating Chat Button */}
-      <IconButton sx={{ position: "fixed", bottom: 20, right: 20, backgroundColor: "#4caf50", color: "white" }} onClick={() => setIsChatOpen(true)}>
+      <IconButton
+        sx={{
+          marginLeft:'10px',
+          backgroundColor: "black",
+          color: "white",
+          "&:hover": { backgroundColor: "gray" },
+        }}
+        onClick={() => setIsChatOpen(true)}
+      >
         <ChatIcon sx={{ fontSize: 40 }} />
       </IconButton>
+    </Box>
 
       {/* Chat Popup */}
       {isChatOpen && (

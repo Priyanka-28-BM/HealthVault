@@ -18,14 +18,14 @@ export const Navbar = ({ isLoggedIn }) => {
   };
 
   // Hide Navbar on home, login, and signup pages
-  if (["/home", "/signup", "/login"].includes(location.pathname)) {
+  if (["/home", "/signup", "/login", "/medicalfiles"].includes(location.pathname)) {
     return null;
   }
 
   return (
     <>
       {/* Navbar Section */}
-      <AppBar sx={{ bgcolor: "#37474F" }}>
+      <AppBar sx={{ bgcolor: "#589F78" }}>
         <Toolbar>
           <Typography
             variant="h4"
@@ -35,22 +35,16 @@ export const Navbar = ({ isLoggedIn }) => {
             HealthVault
           </Typography>
 
-          {!isLoggedIn && (
-            <>
-              <Button variant="contained" style={button} color="error" component={Link} to="/login">
-                Login
-              </Button>
-
-              <Button variant="contained" style={button} color="success" component={Link} to="/signup">
-                Signup
-              </Button>
-            </>
-          )}
+        
         </Toolbar>
       </AppBar>
 
       {/* Informational Section */}
-      <Box sx={{ mt: 15, mb: 5, textAlign: "center", p: 4 }}>
+      <Box sx={{ mt: 15, mb: 5, textAlign: "center", p: 4,backgroundImage: "url('https://i.pinimg.com/736x/84/44/4c/84444c1440e6c2463f6c1bc6aa159448.jpg')", // Add your image path
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    color: "white", }}>
         <Container>
           {/* Hero Section */}
           <Typography variant="h3" fontWeight="bold" color="text.primary">
