@@ -188,6 +188,7 @@ function MedicalFiles() {
         {/* Left Side - Note Section */}
         <Grid item xs={12} md={3}>
           <Card sx={{ 
+            marginLeft:'20px',
             height: "100%",
             backgroundColor: "rgba(255, 255, 255, 0.9)",
             backdropFilter: "blur(5px)",
@@ -233,9 +234,10 @@ function MedicalFiles() {
             backdropFilter: "blur(5px)",
             boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
             borderRadius: "15px",
-            height: "100%",
+            height: "250%",
             overflowY: "auto",
-            maxHeight: "100vh",
+            maxHeight: "80vh",
+            width:"160vh"
           }}>
             <CardContent>
               <Typography variant="h4" sx={{ 
