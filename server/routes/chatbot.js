@@ -21,7 +21,6 @@ router.post("/", async (req, res) => {
                 headers: { Authorization: `Bearer ${GROQ_API_KEY}` },
             }
         );
-
         // Send AI-generated response back to the client
         res.json({ reply: response.data.choices[0].message.content });
     } catch (error) {
