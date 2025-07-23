@@ -10,16 +10,12 @@ const Signup = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
-    const [isRegistered, setIsRegistered] = useState(false); // To track if user is already registered
     const navigate = useNavigate();
 
     // Check if user is already registered
     useEffect(() => {
         const checkUser = async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                setIsRegistered(true);
-            }
         };
         checkUser();
     }, []);
@@ -154,9 +150,8 @@ const Signup = () => {
                         </Button>
                     </form>
 
-                    {isRegistered && (
-                        <Typography sx={{ mt: 2 }}>
-                            Already have an account?{" "}
+                    <Typography sx={{ mt: 2 }}>
+                        Already have an account?{" "}
                             <Button 
                                 onClick={() => navigate("/login")} 
                                 color="primary"
@@ -164,8 +159,8 @@ const Signup = () => {
                             >
                                 Login here
                             </Button>
-                        </Typography>
-                    )}
+                    </Typography>
+                    
                 </Paper>
             </Box>
         </Box>
