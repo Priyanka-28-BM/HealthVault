@@ -31,6 +31,13 @@ function MedicalFiles() {
   const [openModal, setOpenModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   // Reset state when hospital name changes
   useEffect(() => {
@@ -138,10 +145,21 @@ function MedicalFiles() {
       const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.]/g, "_");
       const filePath = `${hospitalName}/${type}/${sanitizedFileName}`;
 
+       let progress = 0;
+    const interval = setInterval(() => {
+      progress += 10;
+      setUploadProgress(progress);
+      if (progress >= 100) clearInterval(interval);
+    }, 100);
+
       const { error } = await supabase.storage
         .from("medical_files")
         .upload(filePath, file, { cacheControl: "3600", upsert: true });
 
+        clearInterval(interval);
+    setUploading(false);
+    setUploadProgress(100);
+    
       if (error) throw error;
 
       await fetchFiles();
@@ -291,26 +309,8 @@ function MedicalFiles() {
                           </Typography>
                         </Box>
 
-                        {filePreviews[type] && (
-                          <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
-                            {filePreviews[type].map((preview, index) => (
-                              <img
-                                key={index}
-                                src={preview}
-                                alt={`Preview ${index + 1}`}
-                                style={{
-                                  width: "80px",
-                                  height: "80px",
-                                  objectFit: "cover",
-                                  borderRadius: "8px",
-                                  cursor: "pointer",
-                                  border: "2px solid #e0e0e0",
-                                }}
-                                onClick={() => handleImageClick(preview)}
-                              />
-                            ))}
-                          </Box>
-                        )}
+                      
+                        
                       </CardContent>
                     </Card>
                   </Grid>
