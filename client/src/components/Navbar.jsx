@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { Box, Container, Grid, Paper } from "@mui/material";
 import TextType from '../hooks/TextType';
+import ShinyText from '../hooks/ShinyText';
 
 export const Navbar = ({ isLoggedIn }) => {
   const location = useLocation();
@@ -26,14 +27,17 @@ export const Navbar = ({ isLoggedIn }) => {
   return (
     <>
       {/* Navbar Section */}
-      <AppBar sx={{ bgcolor: "#589F78" }}>
+      <AppBar sx={{ bgcolor: "#118291ff" }}>
         <Toolbar>
           <Typography
             variant="h3"
             component="div"
-            sx={{ flexGrow: 1, fontWeight: "bold", color: "primary.contrastText",textAlign: "center" }}
+            sx={{ flexGrow: 1, fontWeight: "bold", color: "white",textAlign: "center" }}
           >
-            HealthVault
+          <ShinyText text="HealthVault" 
+          disabled={false} 
+          speed={3} 
+          className='custom-class' />
           </Typography>
 
         
@@ -103,6 +107,7 @@ export const Navbar = ({ isLoggedIn }) => {
 
           {/* Call to Action */}
           <Box sx={{ mt: 11.5 }}>
+
             <Button
               variant="contained"
               color="primary"

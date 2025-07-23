@@ -6,11 +6,13 @@ import Home from './components/Home';
 import Navbar from './components/Navbar';
 import MedicalFiles from './components/medicalfiles';
 
+
 function App() {
   const [count, setCount] = useState(0); // Remove if not used
 
   return (
     <BrowserRouter>
+
 
     <Navbar/>
       <Routes>
