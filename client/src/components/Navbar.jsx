@@ -5,6 +5,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { Box, Container, Grid, Paper } from "@mui/material";
+import TextType from '../hooks/TextType';
 
 export const Navbar = ({ isLoggedIn }) => {
   const location = useLocation();
@@ -28,9 +29,9 @@ export const Navbar = ({ isLoggedIn }) => {
       <AppBar sx={{ bgcolor: "#589F78" }}>
         <Toolbar>
           <Typography
-            variant="h4"
+            variant="h3"
             component="div"
-            sx={{ flexGrow: 1, fontWeight: "bold", color: "primary.contrastText" }}
+            sx={{ flexGrow: 1, fontWeight: "bold", color: "primary.contrastText",textAlign: "center" }}
           >
             HealthVault
           </Typography>
@@ -47,8 +48,17 @@ export const Navbar = ({ isLoggedIn }) => {
     color: "white", }}>
         <Container>
           {/* Hero Section */}
+          
           <Typography variant="h3" fontWeight="bold" color="text.primary">
-            Your Personal Health Wallet
+            <TextType 
+            text={["Your Personal Health Wallet"]}
+            textColors={["text.primary"]}
+            typingSpeed={75}
+            pauseDuration={1500}
+            showCursor={true}
+            cursorCharacter="|"
+          />
+            
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ mt: 2 }}>
             Securely track, manage, and improve your well-being with AI-powered insights.
