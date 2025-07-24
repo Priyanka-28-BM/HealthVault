@@ -578,36 +578,35 @@ function ProfilePage() {
 </Box>
 
 
-      <Box sx={{ position: "fixed", bottom: 30, right: 40, textAlign: "center" }}>
-      {/* Label Text */}
-      <Typography
-        sx={{
-          fontSize: 14,
-          fontWeight: "bold",
-          color: "white",
-          backgroundColor: "black",
-          padding: "4px 8px",
-          borderRadius: "8px",
-          marginLeft: "200px",
-          display: "inline-block",
-        }}
-      >
-        Ask health-related queries
-      </Typography>
-
-      {/* Floating Chat Button */}
-      <IconButton
-        sx={{
-          marginLeft:'10px',
-          backgroundColor: "black",
-          color: "white",
-          "&:hover": { backgroundColor: "gray" },
-        }}
-        onClick={() => setIsChatOpen(true)}
-      >
-        <ChatIcon sx={{ fontSize: 40 }} />
-      </IconButton>
-    </Box>
+      <Box sx={{ position: "fixed", bottom: 30, right: 40, textAlign: "center", display: 'flex', alignItems: 'center', gap: 2 }}>
+        {/* Blood Test Analyzer Button */}
+        <IconButton
+          sx={{
+            width: 56,
+            height: 56,
+            backgroundColor: "#d32f2f",
+            color: "white",
+            borderRadius: "50%",
+            boxShadow: 3,
+            '&:hover': { backgroundColor: '#b71c1c' },
+          }}
+          onClick={() => window.open(window.location.origin + '/home/bloodtestanalyzer', '_blank')}
+        >
+          <span role="img" aria-label="Blood Test">🩸</span>
+        </IconButton>
+        {/* Floating Chat Button (Bot) */}
+        <IconButton
+          sx={{
+            marginLeft:'10px',
+            backgroundColor: "black",
+            color: "white",
+            "&:hover": { backgroundColor: "gray" },
+          }}
+          onClick={() => setIsChatOpen(true)}
+        >
+          <ChatIcon sx={{ fontSize: 40 }} />
+        </IconButton>
+      </Box>
 
       {/* Chat Popup */}
       {isChatOpen && (

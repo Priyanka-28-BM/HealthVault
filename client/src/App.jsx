@@ -6,6 +6,7 @@ import Home from './components/Home';
 import Navbar from './components/Navbar';
 import MedicalFiles from './components/medicalfiles';
 import Footer from './components/Footer'; 
+import BloodTestAnalyzer from './components/BloodTestAnalyzer';
 
 function App() {
   const [count, setCount] = useState(0); // Optional - can remove if unused
@@ -20,6 +21,7 @@ function App() {
         <Route path="/signup" element={<Signup />} /> 
         <Route path="/home" element={<Home />} /> 
         <Route path="/medicalfiles" element={<MedicalFiles />} />
+        <Route path="/bloodtestanalyzer" element={<BloodTestAnalyzer />} />
       </Routes>
 
       <Footer /> 
