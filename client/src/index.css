@@ -7,4 +7,8 @@ body{
   height: 100vh;
   width:100%;
   overflow: hidden ;
+  overflow-x: hidden;
+}
+.page {
+  opacity: 0;
 }

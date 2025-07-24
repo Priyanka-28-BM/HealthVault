@@ -16,11 +16,13 @@
     "@mui/material": "^6.4.3",
     "@supabase/supabase-js": "^2.48.1",
     "axios": "^1.7.9",
+    "framer-motion": "^12.23.7",
     "gsap": "^3.13.0",
     "lucide-react": "^0.525.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.1.5"
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^7.7.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

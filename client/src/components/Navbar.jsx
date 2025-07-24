@@ -8,6 +8,7 @@ import { Box, Container, Grid, Paper } from "@mui/material";
 import TextType from '../hooks/TextType';
 import ShinyText from '../hooks/ShinyText';
 
+
 export const Navbar = ({ isLoggedIn }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -69,6 +70,7 @@ export const Navbar = ({ isLoggedIn }) => {
           </Typography>
 
           {/* Features Section */}
+          
           <Grid container spacing={3} justifyContent="center" sx={{ mt: 4 }}>
             {[
               { title: "⚡ Quick & Simple", desc: "Fast access to your health data anywhere." },
