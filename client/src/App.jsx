@@ -5,21 +5,29 @@ import Signup from './components/Signup';
 import Home from './components/Home';
 import Navbar from './components/Navbar';
 import MedicalFiles from './components/medicalfiles';
+import PageTransitionWrapper from './components/PageTransitionWrapper';
+import Footer from './components/Footer';
 
-function App() {
-  const [count, setCount] = useState(0); // Remove if not used
+function AnimatedRoutes() {
+  const location = useLocation();
 
   return (
-    <BrowserRouter>
+    <Routes location={location} key={location.pathname}>
+      <Route path="/navbar" element={<PageTransitionWrapper><Navbar /></PageTransitionWrapper>} /> 
+      <Route path="/login" element={<PageTransitionWrapper><Login /></PageTransitionWrapper>} /> 
+      <Route path="/signup" element={<PageTransitionWrapper><Signup /></PageTransitionWrapper>} /> 
+      <Route path="/home" element={<PageTransitionWrapper><Home /></PageTransitionWrapper>} /> 
+      <Route path="/medicalfiles" element={<PageTransitionWrapper><MedicalFiles /></PageTransitionWrapper>} />
+    </Routes>
+  );
+}
 
-    <Navbar/>
-      <Routes>
-        <Route path="/navbar" element={<Navbar />} /> 
-        <Route path="/login" element={<Login />} /> 
-        <Route path="/signup" element={<Signup />} /> 
-        <Route path="/home" element={<Home />} /> 
-        <Route path="/medicalfiles" element={<MedicalFiles />} />
-      </Routes>
+function App() {
+  return (
+    <BrowserRouter>
+      <Navbar />
+      <AnimatedRoutes />
+      <Footer />
     </BrowserRouter>
   );
 }
