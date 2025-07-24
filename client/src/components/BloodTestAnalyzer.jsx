@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Typography, Button, Card, CardContent, CircularProgress, Paper, List, ListItem, ListItemText } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
-const GEMINI_API_KEY = 'AIzaSyBOi1AVal5k5okLlJEeme2o5s-xSQSX2s8';
+const GEMINI_API_KEY = 'your-api-key';
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + GEMINI_API_KEY;
 
 function BloodTestAnalyzer() {
