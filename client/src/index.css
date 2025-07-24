@@ -1,8 +1,24 @@
-body{
+/* index.css */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
   background-color: white;
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
+<<<<<<< HEAD
   width:100%;
  }
+=======
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.main-content {
+  flex: 1;
+}
+>>>>>>> 67c0b8b59d87c74ac5eec325da6ba149f7478ae6
