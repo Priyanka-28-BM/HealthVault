@@ -383,8 +383,9 @@ function ProfilePage() {
         onClick={handleLogout}
         sx={{
           backgroundColor: "lightgreen", // Pastel Green
+          transition: "transform 0.2s ease-in-out",
           "&:hover": {
-            backgroundColor: "#cc0000",
+            backgroundColor: "lightgreen",transform: "scale(0.95)",
           },
         }}
       >
@@ -405,8 +406,14 @@ function ProfilePage() {
           variant="contained"
           color="primary"
           onClick={handleSaveProfile}
+
           fullWidth
-          sx={{ mt: 2, borderRadius: "10px" }}
+          sx={{ mt: 2, borderRadius: "10px",
+            transition: "transform 0.2s ease-in-out", 
+            "&:hover": {
+            transform: "scale(0.95)",
+    },
+          }}
         >
           Save Profile
         </Button>
@@ -479,7 +486,14 @@ function ProfilePage() {
       onChange={(e) => setHospitalName(e.target.value)}
       fullWidth
     />
-    <Button variant="contained" color="primary" onClick={handleAddHospital}>
+    <Button variant="contained" color="primary" onClick={handleAddHospital}
+    sx={{
+    transition: "transform 0.2s ease-in-out",
+    "&:hover": {
+      transform: "scale(0.95)", // Shrinks the button slightly on hover
+    },
+     }}
+  >
       Add
     </Button>
   </Box>

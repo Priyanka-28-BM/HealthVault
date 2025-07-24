@@ -147,7 +147,10 @@ const Signup = () => {
                                 mt: 3, 
                                 px: 4,
                                 backgroundColor: 'green',
-                                '&:hover': { backgroundColor: 'darkgreen' }
+                                transition: "transform 0.2s ease-in-out",
+                                '&:hover': { backgroundColor: 'darkgreen' , transform: "scale(0.95)",}
+
+                                
                             }}
                         >
                             Sign Up

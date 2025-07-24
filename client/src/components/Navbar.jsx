@@ -116,11 +116,18 @@ export const Navbar = ({ isLoggedIn }) => {
               size="large"
               onClick={() => {
                 navigate("/signup");
-                window.scrollTo(0, 0); // Ensure the page starts from the top
+                window.scrollTo(0, 0);
+              }}
+              sx={{
+                transition: "transform 0.2s ease-in-out",
+                "&:hover": {
+                  transform: "scale(0.95)", // Shrinks the button slightly on hover
+                },
               }}
             >
               Get Started Now
             </Button>
+
           </Box>
         </Container>
       </Box>
