@@ -7,9 +7,11 @@ import MedicalFiles from "./components/medicalfiles";
 import { LandingPage } from "./components/LandingPage";
 import Profile from "./components/Profile";
 import { UserProvider } from "./context/UserContext.jsx";
+import Footer from './components/Footer'; 
+
 
 function App() {
-  const [count, setCount] = useState(0); // Remove if not used
+  const [count, setCount] = useState(0); // Optional - can remove if unused
 
   return (
     <BrowserRouter>
@@ -23,6 +25,7 @@ function App() {
           <Route path="/medicalfiles" element={<MedicalFiles />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
+      <Footer /> 
       </UserProvider>
     </BrowserRouter>
   );
