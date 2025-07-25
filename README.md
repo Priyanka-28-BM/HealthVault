@@ -40,8 +40,8 @@ This platform is tailored for individuals, caregivers, and healthcare profession
   npm run dev
   ```
 
-🧠 Role-Based Access Control (RBAC) Setup
-During signup, users can select their role: Patient, Doctor, or Admin.
+## 🧠 Role-Based Access Control (RBAC) Setup
+### During signup, users can select their role: Patient, Doctor, or Admin.
 
 The selected role is stored in Supabase's profiles table and linked to their user ID.
 
