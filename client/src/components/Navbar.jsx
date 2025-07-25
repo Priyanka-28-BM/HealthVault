@@ -1,3 +1,7 @@
+//just here for reference
+//this code is transferred to LandingPage.jsx as this is the landing page component
+//instead of Navbar.jsx, we used Navbar2.jsx for the Navbar component
+
 // import React from "react";
 // import { Link, useLocation, useNavigate } from "react-router-dom";
 // import AppBar from "@mui/material/AppBar";
