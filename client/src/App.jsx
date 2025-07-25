@@ -5,7 +5,9 @@ import Signup from './components/Signup';
 import Home from './components/Home';
 import Navbar from './components/Navbar';
 import MedicalFiles from './components/medicalfiles';
-import Footer from './components/Footer'; 
+import Footer from './components/Footer';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 
 function App() {
   const [count, setCount] = useState(0); // Optional - can remove if unused
@@ -20,6 +22,8 @@ function App() {
         <Route path="/signup" element={<Signup />} /> 
         <Route path="/home" element={<Home />} /> 
         <Route path="/medicalfiles" element={<MedicalFiles />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
 
       <Footer /> 

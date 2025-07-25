@@ -191,11 +191,21 @@ const Login = () => {
               }}
             />
 
+
             {error && (
               <Typography color="error" sx={{ mt: 2 }}>
                 {error}
               </Typography>
             )}
+
+            <Button
+              variant="text"
+              color="primary"
+              sx={{ mt: 1, mb: 1, textTransform: "none", float: "right" }}
+              onClick={() => navigate("/forgot-password")}
+            >
+              Forgot Password?
+            </Button>
 
             <Button
               variant="contained"
