@@ -1,12 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../config/supabaseClient";
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const UpdatePassword = () => {
   const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
@@ -24,9 +23,8 @@ const UpdatePassword = () => {
     }
   }, []);
 
-  
-
   const handleUpdate = async () => {
+    setMessage("");
 
     if (!newPassword || !confirmPassword) {
       setMessage("Please fill in all fields.");
@@ -37,7 +35,8 @@ const UpdatePassword = () => {
       setMessage("Passwords do not match!");
       return;
     }
-    const { data, error } = await supabase.auth.updateUser({
+
+    const { error } = await supabase.auth.updateUser({
       password: newPassword,
     });
 
@@ -45,46 +44,90 @@ const UpdatePassword = () => {
       setMessage(error.message);
     } else {
       setMessage("Password updated successfully!");
+      setNewPassword("");
+      setConfirmPassword("");
 
-       setTimeout(() => {
-       navigate('/login'); // Redirect to login after 2 seconds
-    }, 2000);
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleUpdate();
+  };
+
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-      <Paper sx={{ p: 4, width: "400px", textAlign: "center" }}>
-        <Typography variant="h5" fontWeight="bold">Update Password</Typography>
-        <TextField
-          fullWidth
-          label="New Password"
-          type="password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          sx={{ mt: 2 }}
-        />
-
-        <TextField
-          fullWidth
-          label="Confirm Password"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          sx={{ mt: 2 }}
-        />
-
-        <Button
-          variant="contained"
-          onClick={handleUpdate}
-          sx={{ mt: 2, backgroundColor: "green", "&:hover": { backgroundColor: "darkgreen" } }}
-        >
+    <Box
+      sx={{
+        minHeight: "80vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#f0f4f8",
+        p: 2,
+      }}
+    >
+      <Paper
+        elevation={4}
+        sx={{
+          p: 4,
+          borderRadius: 3,
+          maxWidth: 400,
+          width: "100%",
+        }}
+      >
+        <Typography variant="h5" align="center" gutterBottom>
           Update Password
-        </Button>
-        {message && <Typography sx={{ mt: 2 }}>{message}</Typography>}
+        </Typography>
+
+        <form onSubmit={handleSubmit}>
+          <TextField
+            type="password"
+            label="New Password"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+          />
+          <TextField
+            type="password"
+            label="Confirm New Password"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            sx={{ mt: 2 }}
+          >
+            Update Password
+          </Button>
+        </form>
+
+        {message && (
+          <Typography
+            variant="body2"
+            align="center"
+            color={message.includes("success") ? "green" : "error"}
+            sx={{ mt: 2 }}
+          >
+            {message}
+          </Typography>
+        )}
       </Paper>
     </Box>
   );
 };
 
 export default UpdatePassword;
+

@@ -1,156 +1,106 @@
-import { useState } from 'react';
-import { supabase } from '../config/supabaseClient';
-import { Link } from 'react-router-dom';
+// src/components/Login.jsx
+import React, { useState } from 'react';
 import {
   Box,
   Button,
-  Paper,
   TextField,
   Typography,
-  IconButton,
+  Paper,
   InputAdornment,
-} from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
-
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
+} from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useNavigate, Link } from 'react-router-dom';
+import { supabase } from '../config/supabaseClient';
+import loginImage from '../images/login-page.jpg'; // Make sure the image is in /src/images/
 
 const Login = () => {
-  // State variables for email, password, and error messages
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [resetEmail, setResetEmail] = useState("");
-  const [showResetDialog, setShowResetDialog] = useState(false);
-
   const navigate = useNavigate();
 
-  const heading = { fontSize: "2.5rem", fontWeight: "600" };
-  const paperstyle = {
-    padding: "2rem",
-    margin: "100px auto",
-    borderRadius: "1rem",
-    boxShadow: "10px 10px 10px rgba(0, 0, 0, 0.2)",
-  };
-  const row = { display: "flex", marginTop: "1.2rem" };
-  const btnStyle = {
-    marginTop: "2rem",
-    fontSize: "1.2rem",
-    fontWeight: "700",
-    backgroundColor: "green",
-    borderRadius: "0.5rem",
-  };
-  const errorText = { color: "red", marginTop: "1rem", fontWeight: "bold" };
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [showResetDialog, setShowResetDialog] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetMessage, setResetMessage] = useState('');
 
-  // Function to handle login
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
 
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-      if (error) {
-        setError(error.message || "Login failed. Please try again.");
-      } else {
-        console.log("Login successful:", data);
-        navigate("/home");
-      }
-    } catch (err) {
-      setError(
-        "Something went wrong. Please check your connection and try again."
-      );
+    if (error) {
+      setError(error.message);
+    } else {
+      navigate('/home');
     }
   };
 
-    const handlePasswordReset = async () => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail);
-      if (error) {
-        setError("Failed to send reset link. Please try again.");
-      } else {
-        alert("Password reset link sent! Check your email.");
-        setShowResetDialog(false);
-        setResetEmail("");
-      }
-    } catch (err) {
-      setError("Something went wrong. Try again later.");
+  const handlePasswordReset = async () => {
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      redirectTo: 'http://localhost:5173/update-password',
+    });
+
+    if (error) {
+      setResetMessage(error.message);
+    } else {
+      setResetMessage('Reset link sent! Please check your email.');
     }
   };
-
 
   return (
-    <Box sx={{ display: "flex", height: "100vh" ,width:'100vw'}}>
-      {/* Left half with image */}
-      <Box
-        sx={{
-          width: "50%",
-          height: "97%",
-          overflow: "hidden",
-        }}
-      >
+    <Box sx={{ height: '100vh', display: 'flex', backgroundColor: '#f5f5f5' }}>
+      <Box sx={{ flex: 1, display: { xs: 'none', md: 'block' } }}>
         <img
-          src="/src/images/login-page.jpg" // Update with your image path
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
+          src={loginImage}
+          alt="Login Visual"
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
       </Box>
 
-      {/* Right half with form */}
-      <Box
-        sx={{
-          width: '50%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundImage: 'url("https://i.pinimg.com/736x/84/44/4c/84444c1440e6c2463f6c1bc6aa159448.jpg")', // Replace with your image URL
-          backgroundSize: 'cover', 
-          backgroundPosition: 'center', 
-          backgroundRepeat: 'no-repeat' // Prevents image repetition
-        }}
-      >
-        <Paper
-          sx={{
-            p: 4,
-            width: "70%",
-            maxWidth: "600",
-            boxShadow: 3,
-            borderRadius: 2,
-            textAlign: "center",
-          }}
-        >
-          <form onSubmit={handleLogin}>
-            <Typography variant="h4" fontWeight="bold">
-              Login
-            </Typography>
+      <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Paper elevation={3} sx={{ padding: 4, width: '90%', maxWidth: 400 }}>
+          <Typography variant="h5" sx={{ mb: 2, textAlign: 'center' }}>
+            Login to HealthVault
+          </Typography>
 
+          <form onSubmit={handleLogin}>
             <TextField
+              label="Email"
               fullWidth
-              label="Enter Email"
+              margin="normal"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              sx={{ mt: 2 }}
               required
+              autoComplete="email"
             />
+
             <TextField
+              label="Password"
               fullWidth
-              label="Enter Password"
-              type={showPassword ? "text" : "password"}
+              margin="normal"
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              sx={{ mt: 2 }}
               required
+              autoComplete="current-password"
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword(!showPassword)}>
+                    <IconButton
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      edge="end"
+                    >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
@@ -158,81 +108,56 @@ const Login = () => {
               }}
             />
 
-            <Link
-              to="/forgot-password"
-              style={{ display: 'block', marginTop: '1rem', color: '#1976d2', textAlign: 'right' }}
-            >
-              Forgot Password?
-              </Link>
-
             {error && (
-              <Typography color="error" sx={{ mt: 2 }}>
+              <Typography color="error" sx={{ mt: 1 }}>
                 {error}
               </Typography>
             )}
 
             <Button
-              variant="contained"
               type="submit"
-              sx={{
-                mt: 3,
-                px: 4,
-                backgroundColor: "green",
-                "&:hover": { backgroundColor: "darkgreen" },
-              }}
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3 }}
             >
               Login
             </Button>
-
-            <Typography sx={{ mt: 2 }}>
-              Don't have an account?{" "}
-              <Button
-                onClick={() => navigate("/signup")}
-                color="primary"
-                sx={{ textTransform: "none" }}
-              >
-                Sign up here
-              </Button>
-            </Typography>
           </form>
-          
-          {showResetDialog && (
-          <Box sx={{ mt: 4 }}>
-          <Typography variant="h6">Reset Password</Typography>
-          <TextField
-            fullWidth
-            label="Enter your email"
-            type="email"
-            value={resetEmail}
-            onChange={(e) => setResetEmail(e.target.value)}
-            sx={{ mt: 2 }}
-          />
-          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-          <Button
-              variant="contained"
-              onClick={async () => {
-              const { data, error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-              redirectTo: "http://localhost:5173/update-password", // for local dev
-          });
 
-          if (error) {
-            alert("Error: " + error.message);
-          } else {
-            alert("Password reset email sent!");
-            setShowResetDialog(false);
-          }
-        }}
-      >
-        Send Reset Email
-        </Button>
-        <Button variant="outlined" onClick={() => setShowResetDialog(false)}>
-        Cancel
-        </Button>
-        </Box>
-        </Box>
-      )}
+          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
+            <Link to="/signup">Don't have an account?</Link>
+            <Button onClick={() => setShowResetDialog(true)} size="small">
+              Forgot Password?
+            </Button>
+          </Box>
         </Paper>
       </Box>
+
+      {/* Password Reset Dialog */}
+      <Dialog open={showResetDialog} onClose={() => setShowResetDialog(false)}>
+        <DialogTitle>Reset Password</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Enter your email"
+            type="email"
+            fullWidth
+            margin="dense"
+            value={resetEmail}
+            onChange={(e) => setResetEmail(e.target.value)}
+          />
+          {resetMessage && (
+            <Typography sx={{ mt: 1 }} color="primary">
+              {resetMessage}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowResetDialog(false)}>Cancel</Button>
+          <Button onClick={handlePasswordReset} variant="contained">
+            Send Reset Link
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
