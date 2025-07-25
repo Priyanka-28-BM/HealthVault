@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import { useState } from 'react';
+import { supabase } from '../config/supabaseClient';
+import { Link } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -10,7 +12,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../config/supabaseClient";
+
 
 const Login = () => {
   // State variables for email, password, and error messages
@@ -18,6 +20,9 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [resetEmail, setResetEmail] = useState("");
+  const [showResetDialog, setShowResetDialog] = useState(false);
+
   const navigate = useNavigate();
 
   const heading = { fontSize: "2.5rem", fontWeight: "600" };
@@ -60,6 +65,22 @@ const Login = () => {
       );
     }
   };
+
+    const handlePasswordReset = async () => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail);
+      if (error) {
+        setError("Failed to send reset link. Please try again.");
+      } else {
+        alert("Password reset link sent! Check your email.");
+        setShowResetDialog(false);
+        setResetEmail("");
+      }
+    } catch (err) {
+      setError("Something went wrong. Try again later.");
+    }
+  };
+
 
   return (
     <Box sx={{ display: "flex", height: "100vh" ,width:'100vw'}}>
@@ -137,6 +158,13 @@ const Login = () => {
               }}
             />
 
+            <Link
+              to="/forgot-password"
+              style={{ display: 'block', marginTop: '1rem', color: '#1976d2', textAlign: 'right' }}
+            >
+              Forgot Password?
+              </Link>
+
             {error && (
               <Typography color="error" sx={{ mt: 2 }}>
                 {error}
@@ -167,6 +195,42 @@ const Login = () => {
               </Button>
             </Typography>
           </form>
+          
+          {showResetDialog && (
+          <Box sx={{ mt: 4 }}>
+          <Typography variant="h6">Reset Password</Typography>
+          <TextField
+            fullWidth
+            label="Enter your email"
+            type="email"
+            value={resetEmail}
+            onChange={(e) => setResetEmail(e.target.value)}
+            sx={{ mt: 2 }}
+          />
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+          <Button
+              variant="contained"
+              onClick={async () => {
+              const { data, error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+              redirectTo: "http://localhost:5173/update-password", // for local dev
+          });
+
+          if (error) {
+            alert("Error: " + error.message);
+          } else {
+            alert("Password reset email sent!");
+            setShowResetDialog(false);
+          }
+        }}
+      >
+        Send Reset Email
+        </Button>
+        <Button variant="outlined" onClick={() => setShowResetDialog(false)}>
+        Cancel
+        </Button>
+        </Box>
+        </Box>
+      )}
         </Paper>
       </Box>
     </Box>
