@@ -9,10 +9,6 @@ body {
   background-color: white;
   display: flex;
   flex-direction: column;
-<<<<<<< HEAD
-  width:100%;
- }
-=======
   min-height: 100vh;
   width: 100%;
   overflow-x: hidden;
@@ -21,4 +17,3 @@ body {
 .main-content {
   flex: 1;
 }
->>>>>>> 67c0b8b59d87c74ac5eec325da6ba149f7478ae6
