@@ -43,15 +43,15 @@ This platform is tailored for individuals, caregivers, and healthcare profession
 ## 🧠 Role-Based Access Control (RBAC) Setup
 ### During signup, users can select their role: Patient, Doctor, or Admin.
 
-The selected role is stored in Supabase's profiles table and linked to their user ID.
+  The selected role is stored in Supabase's profiles table and linked to their user ID.
 
-Upon login, the app fetches the user's role and redirects them to their role-specific dashboard:
+  Upon login, the app fetches the user's role and redirects them to their role-specific dashboard:
 
-/patient-dashboard
+  /patient-dashboard
 
-/doctor-dashboard
+  /doctor-dashboard
 
-/admin-dashboard
+  /admin-dashboard
 
 🎯 This ensures that only authorized roles can access their respective sections.
 
