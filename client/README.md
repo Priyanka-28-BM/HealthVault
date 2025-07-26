@@ -82,7 +82,7 @@ This version ensures:
 - File/folder structure is neatly shown under **Project Structure**
 - No mixing between commands and files
 
-Let me know if you want this structure visualized for the full project (root → client + server).
+
 
 
 
