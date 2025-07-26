@@ -19,6 +19,9 @@ app.use("/auth", authRoutes);
 // Chatbot API route
 app.use("/chat", chatbotRoutes);
 
+const profileRoutes = require("./routes/profile"); 
+app.use("/api", profileRoutes);
+
 
 // Start the server
 app.listen(PORT, () => {

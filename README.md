@@ -86,7 +86,7 @@ This platform is tailored for individuals, caregivers, and healthcare profession
 Contributions are welcome! Feel free to fork the repository and submit a pull request with improvements or new features.
 
 ## 📜 License
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](LICENSE).
 
 ## 📬 Contact
 For any queries or suggestions, feel free to reach out!
