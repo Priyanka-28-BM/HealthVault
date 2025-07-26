@@ -68,7 +68,7 @@ client/
 ```bash
 npm install
 ```
-###2. Start Development Server
+2. Start Development Server
 ```bash
 npm run dev
 ```
