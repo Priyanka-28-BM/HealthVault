@@ -17,7 +17,63 @@ This platform is tailored for individuals, caregivers, and healthcare profession
 - **Frontend:** React.js with Vite
 - **Backend:** Node.js   
 - **AI/ML:** LLama3-8b with Groq AI 
-- **Database:** Supabase 
+- **Database:** Supabase
+
+##HealthVault/
+├── client/                        # Frontend (React + Vite)
+│   ├── src/
+│   │   ├── Pages/
+│   │   │   ├── AuthRedirect.jsx
+│   │   │   ├── ForgotPassword.jsx
+│   │   │   └── UpdatePassword.jsx
+│   │   ├── components/
+│   │   │   ├── dashboards/
+│   │   │   │   ├── AdminDashboard.jsx
+│   │   │   │   ├── DoctorDashboard.jsx
+│   │   │   │   └── PatientDashboard.jsx
+│   │   │   ├── Footer.jsx
+│   │   │   ├── ForgotPassword.jsx
+│   │   │   ├── Home.jsx
+│   │   │   ├── LandingPage.jsx
+│   │   │   ├── Login.jsx
+│   │   │   ├── Logout.jsx
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── Navbar2.jsx
+│   │   │   ├── Profile.jsx
+│   │   │   ├── ProtectedRoute.jsx
+│   │   │   ├── ResetPassword.jsx
+│   │   │   ├── Signup.jsx
+│   │   │   └── medicalfiles.jsx
+│   │   ├── config/
+│   │   ├── context/
+│   │   │   └── UserContext.jsx
+│   │   ├── images/
+│   │   │   ├── avatar.jpg
+│   │   │   ├── background.jpg
+│   │   │   ├── hospital icon.jpg
+│   │   │   └── login-page.jpg
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   ├── main.jsx
+│   │   └── supabaseClient.js
+│   ├── .gitignore
+│   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
+│   └── vite.config.js
+│
+├── server/                        # Backend (Node.js)
+│   ├── routes/
+│   │   ├── auth.js
+│   │   └── chatbot.js
+│   ├── index.js
+│   ├── package.json
+│   ├── package-lock.json
+│   └── .gitignore
+│
+├── LICENSE
+├── README.md
+
 
 ## 🚀 Installation  
 ### Prerequisites  
