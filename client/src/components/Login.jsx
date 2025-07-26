@@ -1,12 +1,38 @@
+   password-reset-feature
+// src/components/Login.jsx
+import React, { useState } from 'react';
 import React, { useState, useEffect } from "react";
+   main
 import {
   Box,
   Button,
-  Paper,
   TextField,
   Typography,
-  IconButton,
+  Paper,
   InputAdornment,
+     password-reset-feature
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
+} from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useNavigate, Link } from 'react-router-dom';
+import { supabase } from '../config/supabaseClient';
+import loginImage from '../images/login-page.jpg'; // Make sure the image is in /src/images/
+
+const Login = () => {
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [showResetDialog, setShowResetDialog] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetMessage, setResetMessage] = useState('');
+=======
 } from "@mui/material";
 import { Divider } from "@mui/material";
 import { Google } from "@mui/icons-material";
@@ -64,10 +90,35 @@ const Login = () => {
     borderRadius: "0.5rem",
   };
   const errorText = { color: "red", marginTop: "1rem", fontWeight: "bold" };
+     main
 
-  // Function to handle login
   const handleLogin = async (e) => {
     e.preventDefault();
+   password-reset-feature
+    setError('');
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setError(error.message);
+    } else {
+      navigate('/home');
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      redirectTo: 'http://localhost:5173/update-password',
+    });
+
+    if (error) {
+      setResetMessage(error.message);
+    } else {
+      setResetMessage('Reset link sent! Please check your email.');
+
     setError("");
     setLoading(true);
     try {
@@ -111,10 +162,15 @@ const Login = () => {
       setError("Something went wrong");
     } finally {
       setLoading(false);
+     main
     }
   };
 
   return (
+     password-reset-feature
+    <Box sx={{ height: '100vh', display: 'flex', backgroundColor: '#f5f5f5' }}>
+      <Box sx={{ flex: 1, display: { xs: 'none', md: 'block' } }}>
+
     <Box sx={{ display: "flex", height: "100vh", width: "100vw" }}>
       {/* Left half with image */}
       <Box
@@ -124,15 +180,20 @@ const Login = () => {
           overflow: "hidden",
         }}
       >
+       main
         <img
-          src="/src/images/login-page.jpg" // Update with your image path
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
+          src={loginImage}
+          alt="Login Visual"
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
       </Box>
+
+     password-reset-feature
+      <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Paper elevation={3} sx={{ padding: 4, width: '90%', maxWidth: 400 }}>
+          <Typography variant="h5" sx={{ mb: 2, textAlign: 'center' }}>
+            Login to HealthVault
+          </Typography>
 
       {/* Right half with form */}
       <Box
@@ -162,28 +223,36 @@ const Login = () => {
             <Typography variant="h4" fontWeight="bold">
               Login
             </Typography>
+     main
 
+          <form onSubmit={handleLogin}>
             <TextField
+              label="Email"
               fullWidth
-              label="Enter Email"
+              margin="normal"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              sx={{ mt: 2 }}
               required
+              autoComplete="email"
             />
+
             <TextField
+              label="Password"
               fullWidth
-              label="Enter Password"
-              type={showPassword ? "text" : "password"}
+              margin="normal"
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              sx={{ mt: 2 }}
               required
+              autoComplete="current-password"
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword(!showPassword)}>
+                    <IconButton
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      edge="end"
+                    >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
@@ -193,12 +262,14 @@ const Login = () => {
 
 
             {error && (
-              <Typography color="error" sx={{ mt: 2 }}>
+              <Typography color="error" sx={{ mt: 1 }}>
                 {error}
               </Typography>
             )}
 
             <Button
+   password-reset-feature
+
               variant="text"
               color="primary"
               sx={{ mt: 1, mb: 1, textTransform: "none", float: "right" }}
@@ -209,16 +280,16 @@ const Login = () => {
 
             <Button
               variant="contained"
+     main
               type="submit"
-              sx={{
-                mt: 3,
-                px: 4,
-                backgroundColor: "green",
-                "&:hover": { backgroundColor: "darkgreen" },
-              }}
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3 }}
             >
               Login
             </Button>
+     password-reset-feature
+
 
             <Divider sx={{ my: 3 }}>
               <Typography variant="body2" color="text.secondary">
@@ -259,9 +330,43 @@ const Login = () => {
                 Sign up here
               </Button>
             </Typography>
+     main
           </form>
+
+          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
+            <Link to="/signup">Don't have an account?</Link>
+            <Button onClick={() => setShowResetDialog(true)} size="small">
+              Forgot Password?
+            </Button>
+          </Box>
         </Paper>
       </Box>
+
+      {/* Password Reset Dialog */}
+      <Dialog open={showResetDialog} onClose={() => setShowResetDialog(false)}>
+        <DialogTitle>Reset Password</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Enter your email"
+            type="email"
+            fullWidth
+            margin="dense"
+            value={resetEmail}
+            onChange={(e) => setResetEmail(e.target.value)}
+          />
+          {resetMessage && (
+            <Typography sx={{ mt: 1 }} color="primary">
+              {resetMessage}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowResetDialog(false)}>Cancel</Button>
+          <Button onClick={handlePasswordReset} variant="contained">
+            Send Reset Link
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
