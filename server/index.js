@@ -19,6 +19,12 @@ app.use("/auth", authRoutes);
 // Chatbot API route
 app.use("/chat", chatbotRoutes);
 
+ 
+// ✅ Root route to fix "Cannot GET /"
+app.get("/", (req, res) => {
+  res.send("Backend API is running!");
+});
+ 
 
 // Start the server
 app.listen(PORT, () => {
