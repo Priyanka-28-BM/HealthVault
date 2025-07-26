@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff, Google, Close } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabaseClient"; // update if your path differs
+import { supabase } from "../config/supabaseClient";
 
 const Login = () => {
   const [email, setEmail] = useState("");
