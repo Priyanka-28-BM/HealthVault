@@ -116,3 +116,77 @@
 // };
 
 // export default Navbar;
+
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { supabase } from "../config/supabaseClient";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+
+const Navbar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsLoggedIn(!!user);
+    };
+
+    checkUser();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session?.user);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate("/");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
+  return (
+    <AppBar sx={{ bgcolor: "#589F78" }}>
+      <Toolbar>
+        <Typography
+          variant="h4"
+          component="div"
+          sx={{ flexGrow: 1, fontWeight: "bold", color: "primary.contrastText" }}
+          onClick={() => navigate(isLoggedIn ? "/home" : "/")}
+          style={{ cursor: "pointer" }}
+        >
+          HealthVault
+        </Typography>
+
+        {isLoggedIn ? (
+          <Button color="inherit" onClick={handleLogout}>
+            Logout
+          </Button>
+        ) : (
+          <>
+            <Button color="inherit" onClick={() => navigate("/login")}>
+              Login
+            </Button>
+            <Button color="inherit" onClick={() => navigate("/signup")}>
+              Sign Up
+            </Button>
+          </>
+        )}
+      </Toolbar>
+    </AppBar>
+  );
+};
+
+export default Navbar;

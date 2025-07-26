@@ -19,30 +19,14 @@ export const LandingPage = ({ isLoggedIn }) => {
   };
 
   // Hide Navbar on home, login, and signup pages
-  if (
-    ["/home", "/signup", "/login", "/medicalfiles"].includes(location.pathname)
-  ) {
-    return null;
-  }
+  // if (
+  //   ["/home", "/signup", "/login", "/medicalfiles"].includes(location.pathname)
+  // ) {
+  //   return null;
+  // }
 
   return (
     <>
-      {/* Navbar Section */}
-      <AppBar sx={{ bgcolor: "#589F78" }}>
-        <Toolbar>
-          <Typography
-            variant="h4"
-            component="div"
-            sx={{
-              flexGrow: 1,
-              fontWeight: "bold",
-              color: "primary.contrastText",
-            }}
-          >
-            HealthVault
-          </Typography>
-        </Toolbar>
-      </AppBar>
 
       {/* Informational Section */}
       <Box

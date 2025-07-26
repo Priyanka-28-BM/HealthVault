@@ -11,14 +11,16 @@ import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import UpdatePassword from './Pages/UpdatePassword';
 import AuthRedirect from './Pages/AuthRedirect';
+import LandingPage from './components/LandingPage';
 
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
+      <Box sx={{ mt: 8 }}>
       
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/home" element={<Home />} />
@@ -31,6 +33,7 @@ function App() {
         {/* Optional 404 Page */}
         {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
+      </Box>
 
       <Footer />
     </BrowserRouter>
