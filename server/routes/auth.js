@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const { createClient } = require("@supabase/supabase-js");
+const jwt = require("jsonwebtoken");
 
 // Initialize Supabase client
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-// Login Route
+// 🔐 Login Route
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -47,4 +48,31 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// 🔐 JWT Middleware (Attach user info from Supabase JWT to `req.user`)
+router.use("/protected", async (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+  try {
+    const decoded = jwt.decode(token); // Supabase tokens are not verified with secret
+    req.user = {
+      id: decoded.sub,
+      role: decoded.user_metadata?.role || null,
+    };
+    next();
+  } catch (err) {
+    res.status(403).json({ error: "Token invalid" });
+  }
+});
+
+// Example Protected Route
+router.get("/protected/hello", (req, res) => {
+  res.json({
+    message: `Hello ${req.user.role}!`,
+    userId: req.user.id,
+  });
+});
+
 module.exports = router;
+
