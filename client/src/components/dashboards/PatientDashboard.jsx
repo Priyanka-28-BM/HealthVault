@@ -2,9 +2,33 @@ import React from 'react';
 import { Box, Typography, Button, Stack } from '@mui/material';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 
+// 🆕 Import the TimelineView component
+import TimelineView from '../components/TimelineView';
+
 // Add another medical-themed background SVG or PNG as overlay
 const patientBgOverlay =
   "url('https://cdn.jsdelivr.net/gh/undraw-io/undraw@master/svg/undraw_medicine_b1ol.svg')";
+
+// 🆕 Example mock user data to test timeline – replace or remove this when actual data is used
+const userData = {
+  medicalRecords: [
+    {
+      date: '2024-12-01',
+      diagnosis: 'Common Cold',
+      notes: 'Cough, sneezing, mild fever'
+    },
+    {
+      date: '2025-01-10',
+      diagnosis: 'Vitamin D Deficiency',
+      notes: 'Fatigue, joint pain, low mood'
+    },
+    {
+      date: '2025-02-18',
+      diagnosis: 'Migraine',
+      notes: 'Headache with nausea, triggered by light'
+    }
+  ]
+};
 
 const PatientDashboard = () => {
   return (
@@ -12,7 +36,6 @@ const PatientDashboard = () => {
       sx={{
         minHeight: '100vh',
         width: '100%',
-        // Layered backgrounds: a gradient, a faint vector on the left, and the original SVG on the right
         bgcolor: 'linear-gradient(135deg, #f3e7e9 0%, #e3eeff 100%)',
         backgroundImage: `
           ${patientBgOverlay}, 
@@ -101,6 +124,11 @@ const PatientDashboard = () => {
         >
           <Typography>Your recent activity and stats will appear here soon.</Typography>
         </Box>
+      </Box>
+
+      {/* 🆕 Timeline + AI Insight Section */}
+      <Box sx={{ px: { xs: 2, sm: 8, md: 20 }, pb: 10 }}>
+        <TimelineView medicalRecords={userData.medicalRecords} />
       </Box>
     </Box>
   );
