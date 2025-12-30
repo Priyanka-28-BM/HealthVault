@@ -9,7 +9,9 @@ This platform is tailored for individuals, caregivers, and healthcare profession
 - ⚡ **Quick & Simple** – Fast access to your health data anywhere.  
 - 📂 **Easy Records Access** – Manage all your medical history in one place.  
 - 🤖 **AI-Chatbot** – Get smart recommendations on home remedies & health-related queries.  
-- 🔒 **Secure Data** – Your medical records are encrypted and safe.  
+- 🔒 **Secure Data** – Your medical records are encrypted and safe.
+- 👤 **Role-Based Access Control (RBAC)** – Supports Patient, Doctor, and Admin roles with role-specific dashboards.
+  
 
 ## 🛠️ Tech Stack  
 - **Frontend:** React.js with Vite
@@ -37,6 +39,22 @@ This platform is tailored for individuals, caregivers, and healthcare profession
   npm install
   npm run dev
   ```
+
+## 🧠 Role-Based Access Control (RBAC) Setup
+### During signup, users can select their role: Patient, Doctor, or Admin.
+
+  The selected role is stored in Supabase's profiles table and linked to their user ID.
+
+  Upon login, the app fetches the user's role and redirects them to their role-specific dashboard:
+
+  /patient-dashboard
+
+  /doctor-dashboard
+
+  /admin-dashboard
+
+🎯 This ensures that only authorized roles can access their respective sections.
+
 ### Setting up LLaMA 3 with Groq for AI Chatbot
 
 1. **Set up environment variables** (Add your API key from Groq)
