@@ -16,6 +16,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { supabase } from "../config/supabaseClient";
+import Navbar2 from "./Navbar2.jsx";
 
 function MedicalFiles() {
   const location = useLocation();
@@ -173,17 +174,17 @@ function MedicalFiles() {
   }
 
   return (
+
     <Box
       sx={{
         width:'100vw',
-        minHeight: "90vh",
+        minHeight: "100vh",
         backgroundImage: 'url("https://i.pinimg.com/736x/84/44/4c/84444c1440e6c2463f6c1bc6aa159448.jpg")',
         backgroundSize: "cover",
         backgroundAttachment: "fixed",
-        display: "flex",
-        padding: "2rem",
       }}
     >
+      <Navbar2 />
       <Grid container spacing={3} sx={{ height: "fit-content" }}>
         {/* Left Side - Note Section */}
         <Grid item xs={12} md={3}>

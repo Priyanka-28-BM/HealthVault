@@ -11,10 +11,17 @@
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^6.4.3",
-    "@mui/material": "^6.4.3",
+    password-reset-feature
+    "@mui/material": "^6.5.0",
     "@supabase/supabase-js": "^2.48.1",
+
+    "@mui/material": "^6.4.3",
+    "@supabase/auth-ui-react": "^0.4.7",
+    "@supabase/auth-ui-shared": "^0.1.8",
+    "@supabase/supabase-js": "^2.52.0",
+   main
     "axios": "^1.7.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
